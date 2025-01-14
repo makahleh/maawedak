@@ -10,13 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class TherapistService {
+public class TherapistService implements UserDetailsService {
 
     @Autowired
     private TherapistRepository therapistRepository;
@@ -24,11 +32,15 @@ public class TherapistService {
     @Autowired
     private TherapistMapper therapistMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     // Create therapist
     public TherapistDTO createTherapist(Customer customer, TherapistDTO therapistDto) throws RuntimeException{
         if(therapistDto.getTherapistId() != null) {
             throw new RuntimeException("Creating Therapist should not have an id");
         }
+        therapistDto.setPassword(passwordEncoder.encode(therapistDto.getPassword()));
         return saveTherapist(customer, therapistDto, null);
     }
 
@@ -76,4 +88,20 @@ public class TherapistService {
         });
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Therapist user = therapistRepository.findByUsernameAndIsActive(username, true)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not exists by Username or Email"));
+
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map((role) -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
+
+        return new org.springframework.security.core.userdetails.User(
+                username,
+                user.getPassword(),
+                authorities
+        );
+    }
 }

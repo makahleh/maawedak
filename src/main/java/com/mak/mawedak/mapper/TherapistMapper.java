@@ -2,10 +2,14 @@ package com.mak.mawedak.mapper;
 
 import com.mak.mawedak.dto.TherapistDTO;
 import com.mak.mawedak.entity.Department;
+import com.mak.mawedak.entity.Role;
 import com.mak.mawedak.entity.Therapist;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class TherapistMapper {
@@ -40,6 +44,7 @@ public class TherapistMapper {
         therapist.setUsername(therapistDto.getUsername());
         therapist.setPassword(therapistDto.getPassword());
         therapist.setDepartment(new Department(therapistDto.getDepartmentId(), null));
+        therapist.setRoles(List.of(new Role(2L)));
         // Add other fields as necessary
         return therapist;
     }

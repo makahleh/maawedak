@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,7 +37,7 @@ public class Therapist {
     @Column(nullable = false, length = 14)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -61,5 +62,12 @@ public class Therapist {
 
     @Column(nullable = false)
     private Double percentage = 0.10;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "therapistId", referencedColumnName = "therapistId"),
+            inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
+    )
+    private List<Role> roles;
 }
 

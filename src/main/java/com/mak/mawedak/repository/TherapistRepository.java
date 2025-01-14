@@ -23,5 +23,7 @@ public interface TherapistRepository extends JpaRepository<Therapist, Long> {
     @Modifying
     @Query("UPDATE Therapist t SET t.isActive = false WHERE t.id = :therapistId AND t.customer.id = :customerId")
     void setInactive(@Param("customerId") Long customerId, @Param("therapistId") Long therapistId);
+
+    Optional<Therapist> findByUsernameAndIsActive(String username, boolean isActive);
 }
 
