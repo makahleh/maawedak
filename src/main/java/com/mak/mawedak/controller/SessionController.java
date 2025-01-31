@@ -4,6 +4,7 @@ import com.mak.mawedak.dto.SessionDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.repository.CustomerRepository;
 import com.mak.mawedak.service.SessionService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/sessions")
+@SecurityRequirement(name = "bearerAuth")
 public class SessionController {
 
     @Autowired

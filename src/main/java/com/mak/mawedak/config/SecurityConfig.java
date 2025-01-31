@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Apply CORS settings
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll() // Allow public access to login
+                        .requestMatchers("/api/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // Allow public access to login
                         .requestMatchers("/api/therapists/**").hasRole("ADMIN") // Restrict to ADMIN role
                         .anyRequest().authenticated() // Require authentication for all other endpoints
                 )

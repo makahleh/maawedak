@@ -4,6 +4,7 @@ import com.mak.mawedak.dto.PatientDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.repository.CustomerRepository;
 import com.mak.mawedak.service.PatientService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/patients")
+@SecurityRequirement(name = "bearerAuth")
 public class PatientController {
 
     @Autowired
