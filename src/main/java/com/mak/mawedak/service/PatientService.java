@@ -1,11 +1,9 @@
 package com.mak.mawedak.service;
 
-//ADD TO GITHUB
 import com.mak.mawedak.dto.PatientDTO;
 import com.mak.mawedak.dto.SessionDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.entity.Patient;
-import com.mak.mawedak.entity.Session;
 import com.mak.mawedak.mapper.PatientMapper;
 import com.mak.mawedak.repository.PatientRepository;
 import jakarta.transaction.Transactional;
@@ -87,13 +85,9 @@ public class PatientService {
 
     public Page<PatientDTO> searchPatients(Customer customer, String searchTerm, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdDate")));
-        String[] nameParts = searchTerm.split(" ");
-        String firstPart = nameParts[0];
-        String secondPart = nameParts.length > 1 ? nameParts[1] : firstPart;
 
         Patient examplePatient = new Patient();
-        examplePatient.setFirstName(firstPart);
-        examplePatient.setLastName(secondPart);
+        examplePatient.setName(searchTerm);
         examplePatient.setCustomer(customer);
 
         ExampleMatcher matcher = ExampleMatcher.matchingAny()

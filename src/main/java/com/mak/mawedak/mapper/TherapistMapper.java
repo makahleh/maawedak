@@ -20,8 +20,7 @@ public class TherapistMapper {
         }
         return new TherapistDTO(
                 therapist.getTherapistId(),
-                therapist.getFirstName(),
-                therapist.getLastName(),
+                therapist.getName(),
                 therapist.getPhoneNumber(),
                 therapist.getHiringDate().toString(),
                 therapist.getDepartment().getDepartmentId(),
@@ -37,14 +36,13 @@ public class TherapistMapper {
         }
         Therapist therapist = existingTherapist != null ? existingTherapist : new Therapist();
         therapist.setTherapistId(therapistDto.getTherapistId());
-        therapist.setFirstName(therapistDto.getFirstName());
-        therapist.setLastName(therapistDto.getLastName());
+        therapist.setName(therapistDto.getName());
         therapist.setPhoneNumber(therapistDto.getPhoneNumber());
         therapist.setHiringDate(LocalDate.parse(therapistDto.getHiringDate()));
         therapist.setUsername(therapistDto.getUsername());
         therapist.setPassword(therapistDto.getPassword());
         therapist.setDepartment(new Department(therapistDto.getDepartmentId(), null));
-        therapist.setRoles(List.of(new Role(2L)));
+        therapist.setRoles(List.of(new Role(1L)));
         // Add other fields as necessary
         return therapist;
     }

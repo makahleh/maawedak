@@ -17,10 +17,9 @@ public class PatientMapper {
     public PatientDTO toDTO(Patient patient, double balance, List<SessionDTO> sessions) {
         return new PatientDTO(
                 patient.getPatientId(),
-                patient.getFirstName(),
-                patient.getLastName(),
+                patient.getName(),
                 patient.getTherapist().getTherapistId(),
-                patient.getTherapist().getFirstName(),
+                patient.getTherapist().getName(),
                 patient.getDepartment().getDepartmentId(),
                 patient.getDepartment().getDepartmentName(),
                 patient.getPaymentMethod().getPaymentMethodId(),
@@ -42,8 +41,7 @@ public class PatientMapper {
         }
         Patient patient = existingPatient != null ? existingPatient : new Patient();
         patient.setPatientId(patientDto.getPatientId());
-        patient.setFirstName(patientDto.getFirstName());
-        patient.setLastName(patientDto.getLastName());
+        patient.setName(patientDto.getName());
         patient.setTherapist(new Therapist(patientDto.getTherapistId()));
         patient.setDepartment(new Department(patientDto.getDepartmentId()));
         patient.setPaymentMethod(new PaymentMethod(patientDto.getPaymentMethodId()));

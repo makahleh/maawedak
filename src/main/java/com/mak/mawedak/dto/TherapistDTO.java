@@ -14,10 +14,7 @@ public class TherapistDTO {
     private Long therapistId;
 
     @NotNull(message = "First name is required")
-    private String firstName;
-
-    @NotNull(message = "Last name is required")
-    private String lastName;
+    private String name;
 
     @NotNull(message = "Phone number is required")
     @Pattern(regexp = "\\d{14}", message = "Phone number must be 14 digits")

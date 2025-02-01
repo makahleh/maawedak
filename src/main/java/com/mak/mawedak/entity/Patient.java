@@ -32,10 +32,7 @@ public class Patient {
     private Customer customer;
 
     @Column(nullable = false, length = 50)
-    private String firstName;
-
-    @Column(nullable = false, length = 50)
-    private String lastName;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name = "therapist_id")

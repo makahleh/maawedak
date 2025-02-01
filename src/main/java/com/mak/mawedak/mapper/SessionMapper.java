@@ -19,8 +19,8 @@ public class SessionMapper {
         }
 
         // Get patient and therapist names from their respective entities
-        String patientName = session.getPatient() != null ? session.getPatient().getFirstName() : null;
-        String therapistName = session.getTherapist() != null ? session.getTherapist().getFirstName() : null;
+        String patientName = session.getPatient() != null ? session.getPatient().getName() : null;
+        String therapistName = session.getTherapist() != null ? session.getTherapist().getName() : null;
 
         return new SessionDTO(
                 session.getSessionId(),

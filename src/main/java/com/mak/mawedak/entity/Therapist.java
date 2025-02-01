@@ -12,7 +12,6 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "therapists")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Therapist {
@@ -29,10 +28,7 @@ public class Therapist {
     private Customer customer;
 
     @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false, length = 50)
-    private String lastName;
+    private String name;
 
     @Column(nullable = false, length = 14)
     private String phoneNumber;
@@ -64,7 +60,7 @@ public class Therapist {
     private Double percentage = 0.10;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
+    @JoinTable(name = "therapists_roles",
             joinColumns = @JoinColumn(name = "therapistId", referencedColumnName = "therapistId"),
             inverseJoinColumns = @JoinColumn(name = "roleId", referencedColumnName = "roleId")
     )
