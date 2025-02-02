@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class TherapistDTO {
     private Long therapistId;
 
-    @NotNull(message = "First name is required")
+    @NotNull(message = "Name is required")
     private String name;
 
     @NotNull(message = "Phone number is required")
