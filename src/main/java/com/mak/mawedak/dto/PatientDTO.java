@@ -14,7 +14,7 @@ public class PatientDTO {
 
     private Long patientId;
 
-    @NotNull(message = "First name is required")
+    @NotNull(message = "name is required")
     private String name;
 
     private Long therapistId;

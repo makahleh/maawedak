@@ -8,7 +8,7 @@ INSERT INTO payment_method (payment_method_id, name) VALUES (1, 'كاش'), (2, '
 
 INSERT INTO Insurance (insurance_id, name, percentage) VALUES (1, 'HealthCare Plus', 80.0), (2, 'Premium Shield', 90.0);
 
-INSERT INTO expense_category (id, name) VALUES (1, 'إيجار'), (2, 'رواتب'), (3, 'معدات'), (4, 'أخرى');
+INSERT INTO expense_category (category_id, name) VALUES (1, 'إيجار'), (2, 'رواتب'), (3, 'معدات'), (4, 'أخرى');
 
 -- CREATE TEST ACCOUNTS
 INSERT INTO Customer (customer_id, name, join_date, updated_date) VALUES (1, 'test', '2025-01-01 10:00:00', '2025-01-01 12:00:00');

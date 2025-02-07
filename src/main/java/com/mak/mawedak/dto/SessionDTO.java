@@ -14,17 +14,19 @@ public class SessionDTO {
 
     private Long patientId;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String patientName;
 
     private Long therapistId;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String therapistName;
 
-    private String sessionDateTime;
+    private String startDateTime;
+
+    private String endDateTime;
 
     private String notes;
 
     private double paymentAmount;
+
+    private Boolean status = false;
 }

@@ -28,9 +28,11 @@ public class SessionMapper {
                 patientName,
                 session.getTherapist().getTherapistId(),
                 therapistName,
-                session.getSessionDateTime() != null ? session.getSessionDateTime().toString() : null,
+                session.getStartDateTime().toString(),
+                session.getEndDateTime().toString(),
                 session.getNotes(),
-                session.getPaymentAmount()
+                session.getPaymentAmount(),
+                session.getStatus()
         );
     }
 
@@ -43,9 +45,11 @@ public class SessionMapper {
         session.setCustomer(customer);
         session.setPatient(new Patient(sessionDto.getPatientId()));
         session.setTherapist(new Therapist(sessionDto.getTherapistId()));  // Assuming Therapist ID is provided
-        session.setSessionDateTime(sessionDto.getSessionDateTime() != null ? LocalDateTime.parse(sessionDto.getSessionDateTime()) : null);
+        session.setStartDateTime(sessionDto.getStartDateTime() != null ? LocalDateTime.parse(sessionDto.getStartDateTime()) : null);
+        session.setEndDateTime(sessionDto.getEndDateTime() != null ? LocalDateTime.parse(sessionDto.getEndDateTime()) : null);
         session.setNotes(sessionDto.getNotes());
         session.setPaymentAmount(sessionDto.getPaymentAmount());
+        session.setStatus(sessionDto.getStatus());
         return session;
     }
 }

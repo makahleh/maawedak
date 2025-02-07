@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Long> {
@@ -19,6 +19,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     Page<Session> findAllByTherapist_TherapistId(Long therapistId, Pageable pageable);
 
     // Find all sessions for a specific customer
-    Page<Session> findAllByCustomer_CustomerId(Long customerId, Pageable pageable);
+    List<Session> findAllByCustomer_CustomerIdAndStartDateTimeLessThanEqualAndEndDateTimeGreaterThanEqual(
+            Long customerId, LocalDateTime endDateTime, LocalDateTime startDateTime);
 }
 

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Transactional
@@ -35,9 +36,28 @@ public class SessionService {
         return sessionMapper.toDTO(session);
     }
 
+    public SessionDTO updateSession(Customer customer, SessionDTO sessionDto) throws RuntimeException {
+        if (sessionDto.getSessionId() == null) {
+            throw new RuntimeException("Updating Session should have a sessionId");
+        }
+
+        Session session = sessionMapper.toEntity(sessionDto, customer);
+        session = sessionRepository.save(session);
+        return sessionMapper.toDTO(session);
+    }
+
     // Get sessions for a specific patient with pagination
     public List<SessionDTO> getSessionsByPatientId(Long patientId) {
         List<Session> sessions = sessionRepository.findAllByPatient_PatientId(patientId);
+
+        return sessions.stream().map(sessionMapper::toDTO).toList();
+    }
+
+    public List<SessionDTO> getSessionsForCalender(Long customerId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Session> sessions = sessionRepository.findAllByCustomer_CustomerIdAndStartDateTimeLessThanEqualAndEndDateTimeGreaterThanEqual(
+                customerId,
+                endDate,
+                startDate);
 
         return sessions.stream().map(sessionMapper::toDTO).toList();
     }

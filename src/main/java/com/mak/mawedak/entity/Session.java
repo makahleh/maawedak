@@ -31,13 +31,19 @@ public class Session {
     @JoinColumn(name = "therapist_id", nullable = false)
     private Therapist therapist;
 
-    @Column(nullable = false)
-    private LocalDateTime sessionDateTime;
+    @Column
+    private LocalDateTime startDateTime;
+
+    @Column
+    private LocalDateTime endDateTime;
 
     @Column(nullable = true)
     private String notes;
 
     @Column(nullable = false)
     private double paymentAmount;
+
+    @Column
+    private Boolean status = false;
 }
 
