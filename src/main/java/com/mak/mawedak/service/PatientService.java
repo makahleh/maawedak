@@ -28,24 +28,24 @@ public class PatientService {
     private SessionService sessionService;
 
     // Create patient
-    public PatientDTO createPatient(Customer customer, PatientDTO patientDto) throws RuntimeException {
+    public PatientDTO createPatient(Long customerId, PatientDTO patientDto) throws RuntimeException {
         if (patientDto.getPatientId() != null) {
             throw new RuntimeException("Creating Patient should not have a patientId");
         }
-        return savePatient(customer, patientDto, null);
+        return savePatient(customerId, patientDto, null);
     }
 
     // Update patient
-    public PatientDTO updatePatient(Customer customer, PatientDTO patientDto) throws RuntimeException {
+    public PatientDTO updatePatient(Long customerId, PatientDTO patientDto) throws RuntimeException {
         Patient patient = patientRepository
-                        .findByCustomer_CustomerIdAndPatientIdAndIsActive(customer.getCustomerId(), patientDto.getPatientId(), true)
+                .findByCustomer_CustomerIdAndPatientIdAndIsActive(customerId, patientDto.getPatientId(), true)
                         .orElseThrow(() -> new RuntimeException("Patient not found"));
-        return savePatient(customer, patientDto, patient);
+        return savePatient(customerId, patientDto, patient);
     }
 
-    private PatientDTO savePatient(Customer customer, PatientDTO patientDto, Patient existingPatient) {
+    private PatientDTO savePatient(Long customerId, PatientDTO patientDto, Patient existingPatient) {
         Patient patient = patientMapper.toEntity(patientDto, existingPatient);
-        patient.setCustomer(customer);
+        patient.setCustomer(new Customer(customerId));
         patient = patientRepository.save(patient);
         return patientMapper.toDTO(patient);
     }
@@ -83,12 +83,12 @@ public class PatientService {
                 .sum();
     }
 
-    public Page<PatientDTO> searchPatients(Customer customer, String searchTerm, int page, int size) {
+    public Page<PatientDTO> searchPatients(Long customerId, String searchTerm, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdDate")));
 
         Patient examplePatient = new Patient();
         examplePatient.setName(searchTerm);
-        examplePatient.setCustomer(customer);
+        examplePatient.setCustomer(new Customer(customerId));
 
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING) // allows partial matching

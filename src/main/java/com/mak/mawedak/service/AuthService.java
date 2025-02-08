@@ -1,13 +1,22 @@
 package com.mak.mawedak.service;
 
+import com.mak.mawedak.dto.AuthResponseDTO;
 import com.mak.mawedak.dto.LoginDTO;
+import com.mak.mawedak.entity.Role;
+import com.mak.mawedak.entity.Therapist;
 import com.mak.mawedak.provider.JwtTokenProvider;
+import com.mak.mawedak.repository.TherapistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -17,7 +26,10 @@ public class AuthService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    public String login(LoginDTO loginDto) {
+    @Autowired
+    private TherapistRepository therapistRepository;
+
+    public AuthResponseDTO login(LoginDTO loginDto) {
 
         // 01 - AuthenticationManager is used to authenticate the user
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -29,9 +41,20 @@ public class AuthService {
         that the user is authenticated and can use user data from Authentication object */
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // 03 - Generate the token based on username and secret key
+        // 03 - Get user details
+        Therapist user = therapistRepository.findByUsernameAndIsActive(loginDto.getUsername(), true)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not exists by Username or Email"));
 
+        List<String> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("customerId", user.getCustomer().getCustomerId());
+        claims.put("roles", roles);
+
+        String jwt = jwtTokenProvider.generateToken(authentication, claims);
         // 04 - Return the token to controller
-        return jwtTokenProvider.generateToken(authentication);
+        return new AuthResponseDTO(jwt);
     }
 }

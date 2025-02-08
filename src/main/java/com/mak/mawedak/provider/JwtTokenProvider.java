@@ -1,5 +1,6 @@
 package com.mak.mawedak.provider;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -12,14 +13,15 @@ import java.security.Key;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
 
     private String jwtSecret = generateSecretKey();
-    private long jwtExpirationDate = 3600000; //1h = 3600s and 3600*1000 = 3600000 milliseconds
+    private long jwtExpirationDate = 10L * 24 * 60 * 60 * 1000; // 10 days in milliseconds
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(Authentication authentication, Map<String, Object> extraClaims) {
 
         String username = authentication.getName();
         Date currentDate = new Date();
@@ -27,6 +29,7 @@ public class JwtTokenProvider {
 
         String token = Jwts.builder()
                 .subject(username)
+                .claims(extraClaims)
                 .issuedAt(new Date())
                 .expiration(expireDate)
                 .signWith(key(), SignatureAlgorithm.HS256)
@@ -57,14 +60,13 @@ public class JwtTokenProvider {
     }
 
     // extract username from JWT token
-    public String getUsername(String token) {
+    public Claims getClaims(String token) {
 
         return Jwts.parser()
                 .verifyWith((SecretKey) key())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
     }
 
     // validate JWT token

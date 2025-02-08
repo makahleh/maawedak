@@ -18,17 +18,9 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    // Build Login REST API
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDto) {
-
-        //01 - Receive the token from AuthService
-        String token = authService.login(loginDto);
-
-        //02 - Set the token as a response using JwtAuthResponse Dto class
-        AuthResponseDTO authResponseDto = new AuthResponseDTO(token);
-
-        //03 - Return the response to the user
+        AuthResponseDTO authResponseDto = authService.login(loginDto);
         return new ResponseEntity<>(authResponseDto, HttpStatus.OK);
     }
 }

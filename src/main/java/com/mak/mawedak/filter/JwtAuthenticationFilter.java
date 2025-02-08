@@ -1,6 +1,7 @@
 package com.mak.mawedak.filter;
 
 import com.mak.mawedak.provider.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,12 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Validate Token
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             // get username from token
-            String username = jwtTokenProvider.getUsername(token);
+            Claims claims = jwtTokenProvider.getClaims(token);
 
-            UserDetails userDetails = getUserService().loadUserByUsername(username);
+            UserDetails userDetails = getUserService().loadUserByUsername(claims.getSubject());
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
+                    claims,
                     null,
                     userDetails.getAuthorities()
             );

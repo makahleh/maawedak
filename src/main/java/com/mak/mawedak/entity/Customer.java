@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @Builder
 public class Customer {
 
+    public Customer(Long customerId) {
+        this.customerId = customerId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
