@@ -43,10 +43,17 @@ public class SessionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<SessionDTO>> getSessions(
-            @RequestParam LocalDateTime startDate,
-            @RequestParam LocalDateTime endDate) {
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(required = false) Long therapistId,
+            @RequestParam(required = false) Long departmentId) {
         Long customerId = 1L;  // TODO to remove
-        List<SessionDTO> patientsPage = sessionService.getSessionsForCalender(customerId, startDate, endDate);
+        List<SessionDTO> patientsPage = sessionService.getSessionsForCalender(
+                customerId,
+                startDate,
+                endDate,
+                therapistId,
+                departmentId);
         return new ResponseEntity<>(patientsPage, HttpStatus.OK);
     }
 

@@ -53,11 +53,18 @@ public class SessionService {
         return sessions.stream().map(sessionMapper::toDTO).toList();
     }
 
-    public List<SessionDTO> getSessionsForCalender(Long customerId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Session> sessions = sessionRepository.findAllByCustomer_CustomerIdAndStartDateTimeLessThanEqualAndEndDateTimeGreaterThanEqual(
+    public List<SessionDTO> getSessionsForCalender(
+            Long customerId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Long therapistId,
+            Long departmentId) {
+        List<Session> sessions = sessionRepository.findSessions(
                 customerId,
+                startDate,
                 endDate,
-                startDate);
+                therapistId,
+                departmentId);
 
         return sessions.stream().map(sessionMapper::toDTO).toList();
     }
