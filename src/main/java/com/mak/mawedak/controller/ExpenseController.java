@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/expenses")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin(origins = "http://localhost:8080")
 public class ExpenseController {
 
     @Autowired

@@ -31,6 +31,14 @@ public class Session {
     @JoinColumn(name = "therapist_id", nullable = false)
     private Therapist therapist;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_method_id")
+    private PaymentMethod paymentMethod;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "insurance_id")
+    private Insurance insurance;
+
     @Column
     private LocalDateTime startDateTime;
 

@@ -1,10 +1,7 @@
 package com.mak.mawedak.mapper;
 
 import com.mak.mawedak.dto.SessionDTO;
-import com.mak.mawedak.entity.Customer;
-import com.mak.mawedak.entity.Patient;
-import com.mak.mawedak.entity.Session;
-import com.mak.mawedak.entity.Therapist;
+import com.mak.mawedak.entity.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,21 +15,26 @@ public class SessionMapper {
             return null;
         }
 
-        // Get patient and therapist names from their respective entities
-        String patientName = session.getPatient() != null ? session.getPatient().getName() : null;
-        String therapistName = session.getTherapist() != null ? session.getTherapist().getName() : null;
+        Long paymentMethodId = session.getPaymentMethod() != null ? session.getPaymentMethod().getPaymentMethodId() : null;
+        Long insuranceId = session.getInsurance() != null ? session.getInsurance().getInsuranceId() : null;
+        String insuranceName = session.getInsurance() != null ? session.getInsurance().getName() : null;
+
 
         return new SessionDTO(
                 session.getSessionId(),
                 session.getPatient().getPatientId(),
-                patientName,
+                session.getPatient().getName(),
                 session.getTherapist().getTherapistId(),
-                therapistName,
+                session.getTherapist().getName(),
+                paymentMethodId,
+                insuranceId,
+                insuranceName,
                 session.getStartDateTime().toString(),
                 session.getEndDateTime().toString(),
                 session.getNotes(),
                 session.getPaymentAmount(),
-                session.getStatus()
+                session.getStatus(),
+                session.getPatient().getDepartment().getDepartmentId()
         );
     }
 
@@ -44,7 +46,9 @@ public class SessionMapper {
         Session session = new Session();
         session.setCustomer(customer);
         session.setPatient(new Patient(sessionDto.getPatientId()));
-        session.setTherapist(new Therapist(sessionDto.getTherapistId()));  // Assuming Therapist ID is provided
+        session.setTherapist(new Therapist(sessionDto.getTherapistId()));
+        session.setPaymentMethod(new PaymentMethod(sessionDto.getPaymentMethodId()));
+        session.setInsurance(new Insurance(sessionDto.getInsuranceId()));
         session.setStartDateTime(sessionDto.getStartDateTime() != null ? LocalDateTime.parse(sessionDto.getStartDateTime()) : null);
         session.setEndDateTime(sessionDto.getEndDateTime() != null ? LocalDateTime.parse(sessionDto.getEndDateTime()) : null);
         session.setNotes(sessionDto.getNotes());

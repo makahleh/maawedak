@@ -17,6 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/therapists")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin(origins = "http://localhost:8080")
 public class TherapistController {
 
     @Autowired
