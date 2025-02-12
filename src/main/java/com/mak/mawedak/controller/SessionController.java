@@ -1,9 +1,8 @@
 package com.mak.mawedak.controller;
 
 import com.mak.mawedak.dto.SessionDTO;
-import com.mak.mawedak.entity.Customer;
-import com.mak.mawedak.repository.CustomerRepository;
 import com.mak.mawedak.service.SessionService;
+import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,23 +21,15 @@ public class SessionController {
     @Autowired
     private SessionService sessionService;
 
-    // TODO to remove
-    @Autowired
-    private CustomerRepository customerRepository;
-
     @PostMapping
     public ResponseEntity<SessionDTO> createSession(@RequestBody SessionDTO sessionDTO) {
-        // TODO to remove
-        Customer customer = customerRepository.findById(1L).get();
-        SessionDTO createdSession = sessionService.createSession(customer, sessionDTO);
+        SessionDTO createdSession = sessionService.createSession(ContextHolderHelper.getCustomerId(), sessionDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
     }
 
     @PutMapping
     public ResponseEntity<SessionDTO> updateSession(@RequestBody SessionDTO sessionDTO) {
-        // TODO to remove
-        Customer customer = customerRepository.findById(1L).get();
-        SessionDTO createdSession = sessionService.createSession(customer, sessionDTO);
+        SessionDTO createdSession = sessionService.updateSession(ContextHolderHelper.getCustomerId(), sessionDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
     }
 
@@ -48,9 +39,8 @@ public class SessionController {
             @RequestParam(required = false) LocalDateTime endDate,
             @RequestParam(required = false) Long therapistId,
             @RequestParam(required = false) Long departmentId) {
-        Long customerId = 1L;  // TODO to remove
         List<SessionDTO> patientsPage = sessionService.getSessionsForCalender(
-                customerId,
+                ContextHolderHelper.getCustomerId(),
                 startDate,
                 endDate,
                 therapistId,

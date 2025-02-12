@@ -7,9 +7,6 @@ import com.mak.mawedak.mapper.SessionMapper;
 import com.mak.mawedak.repository.SessionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,22 +23,22 @@ public class SessionService {
     private SessionMapper sessionMapper;
 
     // Create session
-    public SessionDTO createSession(Customer customer, SessionDTO sessionDto) throws RuntimeException {
+    public SessionDTO createSession(Long customerId, SessionDTO sessionDto) throws RuntimeException {
         if (sessionDto.getSessionId() != null) {
             throw new RuntimeException("Creating Session should not have a sessionId");
         }
 
-        Session session = sessionMapper.toEntity(sessionDto, customer);
+        Session session = sessionMapper.toEntity(sessionDto, new Customer(customerId));
         session = sessionRepository.save(session);
         return sessionMapper.toDTO(session);
     }
 
-    public SessionDTO updateSession(Customer customer, SessionDTO sessionDto) throws RuntimeException {
+    public SessionDTO updateSession(Long customerId, SessionDTO sessionDto) throws RuntimeException {
         if (sessionDto.getSessionId() == null) {
             throw new RuntimeException("Updating Session should have a sessionId");
         }
 
-        Session session = sessionMapper.toEntity(sessionDto, customer);
+        Session session = sessionMapper.toEntity(sessionDto, new Customer(customerId));
         session = sessionRepository.save(session);
         return sessionMapper.toDTO(session);
     }

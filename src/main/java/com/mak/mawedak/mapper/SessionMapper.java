@@ -34,7 +34,7 @@ public class SessionMapper {
                 session.getNotes(),
                 session.getPaymentAmount(),
                 session.getStatus(),
-                session.getPatient().getDepartment().getDepartmentId()
+                session.getPatient().getDepartment() != null ? session.getPatient().getDepartment().getDepartmentId() : null
         );
     }
 
@@ -46,9 +46,9 @@ public class SessionMapper {
         Session session = new Session();
         session.setCustomer(customer);
         session.setPatient(new Patient(sessionDto.getPatientId()));
-        session.setTherapist(new Therapist(sessionDto.getTherapistId()));
-        session.setPaymentMethod(new PaymentMethod(sessionDto.getPaymentMethodId()));
-        session.setInsurance(new Insurance(sessionDto.getInsuranceId()));
+        session.setTherapist(sessionDto.getTherapistId() != null ? new Therapist(sessionDto.getTherapistId()) : null);
+        session.setPaymentMethod(sessionDto.getPaymentMethodId() != null ? new PaymentMethod(sessionDto.getPaymentMethodId()) : null);
+        session.setInsurance(sessionDto.getInsuranceId() != null ? new Insurance(sessionDto.getInsuranceId()) : null);
         session.setStartDateTime(sessionDto.getStartDateTime() != null ? LocalDateTime.parse(sessionDto.getStartDateTime()) : null);
         session.setEndDateTime(sessionDto.getEndDateTime() != null ? LocalDateTime.parse(sessionDto.getEndDateTime()) : null);
         session.setNotes(sessionDto.getNotes());
