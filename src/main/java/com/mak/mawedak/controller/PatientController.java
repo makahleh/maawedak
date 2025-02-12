@@ -49,8 +49,7 @@ public class PatientController {
     // Get patient by ID
     @GetMapping("/{patientId}")
     public ResponseEntity<PatientDTO> getPatientById(@PathVariable Long patientId) {
-        Long customerId = 1L;  // TODO to remove
-        Optional<PatientDTO> patientDTO = patientService.getPatientById(customerId, patientId);
+        Optional<PatientDTO> patientDTO = patientService.getPatientDetails(ContextHolderHelper.getCustomerId(), patientId);
         return patientDTO
                 .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -61,7 +60,7 @@ public class PatientController {
             @RequestParam String searchTerm,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Page<PatientDTO> results = patientService.searchPatients(ContextHolderHelper.getCustomerId(), searchTerm, size, page);
+        Page<PatientDTO> results = patientService.searchPatients(ContextHolderHelper.getCustomerId(), searchTerm, page, size);
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 

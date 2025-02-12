@@ -23,5 +23,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     @Modifying
     @Query("UPDATE Patient p SET p.isActive = false WHERE p.patientId = :patientId AND p.customer.id = :customerId")
     void setInactive(@Param("customerId") Long customerId, @Param("patientId") Long patientId);
+
+    Page<Patient> findByNameContainingIgnoreCaseAndCustomer_CustomerIdAndIsActive(String searchTerm, Long customerId, boolean isActive, Pageable pageable);
 }
 

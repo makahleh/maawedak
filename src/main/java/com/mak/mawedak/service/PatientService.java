@@ -8,6 +8,7 @@ import com.mak.mawedak.mapper.PatientMapper;
 import com.mak.mawedak.repository.PatientRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class PatientService {
     private PatientMapper patientMapper;
 
     @Autowired
+    @Lazy // used to break cyclic dependency with session service, when we need PatientService in session service
     private SessionService sessionService;
 
     // Create patient
@@ -62,19 +64,22 @@ public class PatientService {
 
     // Set patient as inactive
     public Optional<PatientDTO> deactivatePatient(Long customerId, Long patientId) {
-        Optional<PatientDTO> dto = getPatientById(customerId, patientId);
+        Optional<PatientDTO> dto = getPatientDetails(customerId, patientId);
         patientRepository.setInactive(customerId, patientId);
         return dto;
     }
 
     // Get patient by ID
-    public Optional<PatientDTO> getPatientById(Long customerId, Long patientId) {
-        Patient patient =
-                patientRepository.findByCustomer_CustomerIdAndPatientIdAndIsActive(customerId, patientId, true)
-                        .orElseThrow(() -> new RuntimeException("Patient not found"));
+    public Optional<PatientDTO> getPatientDetails(Long customerId, Long patientId) {
+        Patient patient = getPatientById(customerId, patientId);
         List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patientId);
         double balance = calculatePatientBalance(sessions);
         return Optional.of(patientMapper.toDTO(patient, balance, sessions));
+    }
+
+    public Patient getPatientById(Long customerId, Long patientId) {
+        return patientRepository.findByCustomer_CustomerIdAndPatientIdAndIsActive(customerId, patientId, true)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 
     private double calculatePatientBalance(List<SessionDTO> sessions) {
@@ -85,16 +90,12 @@ public class PatientService {
 
     public Page<PatientDTO> searchPatients(Long customerId, String searchTerm, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdDate")));
-
-        Patient examplePatient = new Patient();
-        examplePatient.setName(searchTerm);
-        examplePatient.setCustomer(new Customer(customerId));
-
-        ExampleMatcher matcher = ExampleMatcher.matchingAny()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING) // allows partial matching
-                .withIgnoreCase(); // ignore case while matching
-        Example<Patient> patientExample = Example.of(examplePatient, matcher);
-        Page<Patient> patients = patientRepository.findAll(patientExample, pageable);
+        // use specifications later
+        Page<Patient> patients = patientRepository.findByNameContainingIgnoreCaseAndCustomer_CustomerIdAndIsActive(
+                searchTerm,
+                customerId,
+                true,
+                pageable);
         return patients.map(patientMapper::toDTO);
     }
 
