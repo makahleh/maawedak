@@ -1,9 +1,8 @@
 package com.mak.mawedak.controller;
 
 import com.mak.mawedak.dto.ExpenseDTO;
-import com.mak.mawedak.entity.Customer;
-import com.mak.mawedak.repository.CustomerRepository;
 import com.mak.mawedak.service.ExpenseService;
+import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,28 +19,17 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
-    // TODO: Mock customer repository
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    private Customer getMockCustomer() {
-        return customerRepository.findById(1L).orElseThrow(() -> new RuntimeException("Customer not found"));
-    }
-
     // Create expense
     @PostMapping
     public ResponseEntity<ExpenseDTO> createExpense(@RequestBody ExpenseDTO expenseDTO) {
-        Customer customer = getMockCustomer();
-        ExpenseDTO savedExpense = expenseService.createExpense(customer, expenseDTO);
+        ExpenseDTO savedExpense = expenseService.createExpense(ContextHolderHelper.getCustomerId(), expenseDTO);
         return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
     }
 
     // Update expense
     @PutMapping("/{expenseId}")
-    public ResponseEntity<ExpenseDTO> updateExpense(@PathVariable Long expenseId, @RequestBody ExpenseDTO expenseDTO) {
-        Customer customer = getMockCustomer();
-        expenseDTO.setExpenseId(expenseId);
-        ExpenseDTO updatedExpense = expenseService.updateExpense(customer, expenseDTO);
+    public ResponseEntity<ExpenseDTO> updateExpense(@RequestBody ExpenseDTO expenseDTO) {
+        ExpenseDTO updatedExpense = expenseService.updateExpense(ContextHolderHelper.getCustomerId(), expenseDTO);
         return new ResponseEntity<>(updatedExpense, HttpStatus.OK);
     }
 
@@ -51,16 +39,14 @@ public class ExpenseController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Customer customer = getMockCustomer();
-        Page<ExpenseDTO> expenses = expenseService.getExpenses(customer.getCustomerId(), page, size);
+        Page<ExpenseDTO> expenses = expenseService.getExpenses(ContextHolderHelper.getCustomerId(), page, size);
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
     // Delete expense
     @DeleteMapping("/{expenseId}")
     public ResponseEntity<Void> deleteExpense(@PathVariable Long expenseId) {
-        Customer customer = getMockCustomer();
-        expenseService.deleteExpense(customer.getCustomerId(), expenseId);
+        expenseService.deleteExpense(ContextHolderHelper.getCustomerId(), expenseId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

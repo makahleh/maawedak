@@ -24,23 +24,23 @@ public class ExpenseService {
     private ExpenseMapper expenseMapper;
 
     // Create expense
-    public ExpenseDTO createExpense(Customer customer, ExpenseDTO expenseDto) {
+    public ExpenseDTO createExpense(Long customerId, ExpenseDTO expenseDto) {
         if (expenseDto.getExpenseId() != null) {
             throw new RuntimeException("Creating Expense should not have an expenseId");
         }
-        return saveExpense(customer, expenseDto, null);
+        return saveExpense(customerId, expenseDto, null);
     }
 
     // Update expense
-    public ExpenseDTO updateExpense(Customer customer, ExpenseDTO expenseDto) {
+    public ExpenseDTO updateExpense(Long customerId, ExpenseDTO expenseDto) {
         Expense expense = expenseRepository.findById(expenseDto.getExpenseId())
                 .orElseThrow(() -> new RuntimeException("Expense not found"));
-        return saveExpense(customer, expenseDto, expense);
+        return saveExpense(customerId, expenseDto, expense);
     }
 
-    private ExpenseDTO saveExpense(Customer customer, ExpenseDTO expenseDto, Expense existingExpense) {
+    private ExpenseDTO saveExpense(Long customerId, ExpenseDTO expenseDto, Expense existingExpense) {
         Expense expense = expenseMapper.toEntity(expenseDto, existingExpense);
-        expense.setCustomer(customer);
+        expense.setCustomer(new Customer(customerId));
         expense = expenseRepository.save(expense);
         return expenseMapper.toDTO(expense);
     }
