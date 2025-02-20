@@ -15,6 +15,10 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long insuranceId;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
     @Column(nullable = false, unique = true)
     private String name;
 
