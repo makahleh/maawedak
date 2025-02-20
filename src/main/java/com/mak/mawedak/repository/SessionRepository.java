@@ -26,7 +26,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             "AND s.startDateTime <= :endDateTime " +
             "AND s.endDateTime >= :startDateTime " +
             "AND (:therapistId IS NULL OR s.therapist.therapistId = :therapistId) " +
-            "AND (:departmentId IS NULL OR s.therapist.department.departmentId = :departmentId)")
+            "AND (:departmentId IS NULL OR s.patient.department.departmentId = :departmentId)")
     List<Session> findSessions(
             @Param("customerId") Long customerId,
             @Param("startDateTime") LocalDateTime startDateTime,
