@@ -44,6 +44,7 @@ public class SessionMapper {
             return null;
         }
         Session session = new Session();
+        session.setSessionId(sessionDto.getSessionId());
         session.setCustomer(customer);
         session.setPatient(new Patient(sessionDto.getPatientId()));
         session.setTherapist(sessionDto.getTherapistId() != null ? new Therapist(sessionDto.getTherapistId()) : null);

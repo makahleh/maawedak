@@ -28,7 +28,7 @@ public class Session {
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "therapist_id", nullable = false)
+    @JoinColumn(name = "therapist_id")
     private Therapist therapist;
 
     @ManyToOne(fetch = FetchType.LAZY)
