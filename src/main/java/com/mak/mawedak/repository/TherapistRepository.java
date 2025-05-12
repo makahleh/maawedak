@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface TherapistRepository extends JpaRepository<Therapist, Long> {
 
     // Find all therapists for a specific customer
-    Page<Therapist> findAllByCustomer_CustomerIdAndIsActive(Long customerId, boolean isActive, Pageable pageable);
+    Page<Therapist> findAllByCustomer_CustomerId(Long customerId, Pageable pageable);
 
     // Find a specific therapist by ID and customer ID
     Optional<Therapist> findByCustomer_CustomerIdAndTherapistIdAndIsActive(Long customerId, Long id, boolean isActive);

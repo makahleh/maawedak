@@ -4,6 +4,7 @@ import com.mak.mawedak.dto.TherapistDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.repository.CustomerRepository;
 import com.mak.mawedak.service.TherapistService;
+import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +24,11 @@ public class TherapistController {
     @Autowired
     private TherapistService therapistService;
 
-    // TODO to remove
-    @Autowired
-    private CustomerRepository customerRepository;
-
     // Create therapist
     @PostMapping
     public ResponseEntity<TherapistDTO> createTherapist(
             @Valid @RequestBody TherapistDTO therapistDTO) {
-        // TODO to remove
-        Customer customer = customerRepository.findById(1L).get();
-        TherapistDTO savedTherapist = therapistService.createTherapist(customer, therapistDTO);
+        TherapistDTO savedTherapist = therapistService.createTherapist(ContextHolderHelper.getCustomerId(), therapistDTO);
         return new ResponseEntity<>(savedTherapist, HttpStatus.CREATED);
     }
 
@@ -41,9 +36,7 @@ public class TherapistController {
     @PutMapping
     public ResponseEntity<TherapistDTO> updateTherapist(
             @Valid @RequestBody TherapistDTO therapistDTO) {
-        // TODO to remove
-        Customer customer = customerRepository.findById(1L).get();
-        TherapistDTO savedTherapist = therapistService.updateTherapist(customer, therapistDTO);
+        TherapistDTO savedTherapist = therapistService.updateTherapist(ContextHolderHelper.getCustomerId(), therapistDTO);
         return new ResponseEntity<>(savedTherapist, HttpStatus.CREATED);
     }
 
@@ -52,8 +45,7 @@ public class TherapistController {
     public ResponseEntity<Page<TherapistDTO>> getTherapists(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Long customerId = 1L;
-        Page<TherapistDTO> therapistsPage = therapistService.getTherapists(customerId, page, size);
+        Page<TherapistDTO> therapistsPage = therapistService.getTherapists(ContextHolderHelper.getCustomerId(), page, size);
         return new ResponseEntity<>(therapistsPage, HttpStatus.OK);
     }
 
@@ -61,8 +53,7 @@ public class TherapistController {
     @GetMapping("/{therapistId}")
     public ResponseEntity<TherapistDTO> getTherapistById(
             @PathVariable Long therapistId) {
-        Long customerId = 1L;
-        Optional<TherapistDTO> therapistDTO = therapistService.getTherapistById(customerId, therapistId);
+        Optional<TherapistDTO> therapistDTO = therapistService.getTherapistById(ContextHolderHelper.getCustomerId(), therapistId);
         return therapistDTO
                 .map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));

@@ -26,7 +26,8 @@ public class TherapistMapper {
                 therapist.getDepartment().getDepartmentId(),
                 therapist.getDepartment().getDepartmentName(),
                 therapist.getUsername(),
-                therapist.getPassword()
+                therapist.getPassword(),
+                therapist.getIsActive()
         );
     }
 
@@ -40,9 +41,9 @@ public class TherapistMapper {
         therapist.setPhoneNumber(therapistDto.getPhoneNumber());
         therapist.setHiringDate(LocalDate.parse(therapistDto.getHiringDate()));
         therapist.setUsername(therapistDto.getUsername());
-        therapist.setPassword(therapistDto.getPassword());
+        therapist.setPassword(therapistDto.getPassword() == null ? therapist.getPassword() : therapistDto.getPassword());
         therapist.setDepartment(new Department(therapistDto.getDepartmentId(), null));
-        therapist.setRoles(List.of(new Role(1L)));
+        therapist.setRoles(new ArrayList<>(List.of(new Role(1L))));
         // Add other fields as necessary
         return therapist;
     }

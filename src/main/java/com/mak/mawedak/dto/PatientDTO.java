@@ -33,7 +33,6 @@ public class PatientDTO {
 
     private String insuranceName;
 
-    @NotNull(message = "Session price is required")
     private double sessionPrice;
 
     @NotNull(message = "Total number of sessions is required")

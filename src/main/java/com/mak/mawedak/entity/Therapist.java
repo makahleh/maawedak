@@ -30,13 +30,13 @@ public class Therapist {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 14)
+    @Column
     private String phoneNumber;
 
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)

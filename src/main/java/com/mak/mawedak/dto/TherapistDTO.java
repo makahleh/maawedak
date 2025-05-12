@@ -16,8 +16,8 @@ public class TherapistDTO {
     @NotNull(message = "Name is required")
     private String name;
 
-    @NotNull(message = "Phone number is required")
-    @Pattern(regexp = "\\d{14}", message = "Phone number must be 14 digits")
+    //    @NotNull(message = "Phone number is required")
+//    @Pattern(regexp = "\\d{14}", message = "Phone number must be 14 digits")
     private String phoneNumber;
 
     private String hiringDate;
@@ -32,4 +32,6 @@ public class TherapistDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
+    private Boolean isActive;
 }

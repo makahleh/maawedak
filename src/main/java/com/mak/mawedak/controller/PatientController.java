@@ -1,7 +1,6 @@
 package com.mak.mawedak.controller;
 
 import com.mak.mawedak.dto.PatientDTO;
-import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.service.PatientService;
 import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

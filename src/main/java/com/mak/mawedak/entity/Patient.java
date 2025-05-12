@@ -50,10 +50,8 @@ public class Patient {
     @JoinColumn(name = "insurance_id")
     private Insurance insurance;
 
-    @Column(nullable = false)
     private double sessionPrice;
 
-    @Column(nullable = false)
     private int numberOfTotalSessions;
 
     @Column()

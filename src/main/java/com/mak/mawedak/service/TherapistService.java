@@ -36,25 +36,30 @@ public class TherapistService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
 
     // Create therapist
-    public TherapistDTO createTherapist(Customer customer, TherapistDTO therapistDto) throws RuntimeException{
+    public TherapistDTO createTherapist(Long customerId, TherapistDTO therapistDto) throws RuntimeException {
         if(therapistDto.getTherapistId() != null) {
             throw new RuntimeException("Creating Therapist should not have an id");
         }
-        therapistDto.setPassword(passwordEncoder.encode(therapistDto.getPassword()));
-        return saveTherapist(customer, therapistDto, null);
+        if (therapistDto.getPassword() != null) {
+            therapistDto.setPassword(passwordEncoder.encode(therapistDto.getPassword()));
+        }
+        return saveTherapist(customerId, therapistDto, null);
     }
 
     // Update therapist
-    public TherapistDTO updateTherapist(Customer customer, TherapistDTO therapistDto) throws RuntimeException{
+    public TherapistDTO updateTherapist(Long customerId, TherapistDTO therapistDto) throws RuntimeException {
         Therapist therapist = therapistRepository.
-                findByCustomer_CustomerIdAndTherapistIdAndIsActive(customer.getCustomerId(), therapistDto.getTherapistId(), true)
+                findByCustomer_CustomerIdAndTherapistIdAndIsActive(customerId, therapistDto.getTherapistId(), true)
                 .orElseThrow(() -> new RuntimeException("Therapist not found"));
-        return saveTherapist(customer, therapistDto, therapist);
+        if (therapistDto.getPassword() != null) {
+            therapistDto.setPassword(passwordEncoder.encode(therapistDto.getPassword()));
+        }
+        return saveTherapist(customerId, therapistDto, therapist);
     }
 
-    private TherapistDTO saveTherapist(Customer customer, TherapistDTO therapistDto, Therapist existingTherapist) {
+    private TherapistDTO saveTherapist(Long customerId, TherapistDTO therapistDto, Therapist existingTherapist) {
         Therapist therapist = therapistMapper.toEntity(therapistDto, existingTherapist);
-        therapist.setCustomer(customer);
+        therapist.setCustomer(new Customer(customerId));
         therapist = therapistRepository.save(therapist);
         return therapistMapper.toDTO(therapist);
     }
@@ -63,7 +68,7 @@ public class TherapistService implements UserDetailsService {
     public Page<TherapistDTO> getTherapists(Long customerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Therapist> therapistsPage =
-                therapistRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
+                therapistRepository.findAllByCustomer_CustomerId(customerId, pageable);
 
         // Map the entities to DTOs
         return therapistsPage.map(therapistMapper::toDTO);
