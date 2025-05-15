@@ -6,6 +6,13 @@ INSERT INTO department (department_id, department_name) VALUES (1, 'أطفال')
 
 INSERT INTO payment_method (payment_method_id, name) VALUES (1, 'كاش'), (2, 'تأمين'), (3, 'نسبة');
 
+INSERT INTO treatment_method (treatment_method_id, name) VALUES
+(1, 'العلاج بالبرودة'),
+(2, 'العلاج بالشمع'),
+(3, 'العلاج بالحرارة'),
+(4, 'العلاج الكهربائي'),
+(5, 'العلاج بالماء'),
+(6, 'تمارين علاجية');
 
 INSERT INTO expense_category (category_id, name) VALUES (1, 'إيجار'), (2, 'رواتب'), (3, 'معدات'), (4, 'أخرى');
 

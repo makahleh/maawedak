@@ -34,6 +34,9 @@ public class Patient {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Column
+    private Integer age;
+
     @ManyToOne
     @JoinColumn(name = "therapist_id")
     private Therapist therapist;
@@ -49,6 +52,14 @@ public class Patient {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insurance_id")
     private Insurance insurance;
+
+    @ManyToMany
+    @JoinTable(
+            name = "patient_treatment_method",
+            joinColumns = @JoinColumn(name = "patient_id"),
+            inverseJoinColumns = @JoinColumn(name = "treatment_method_id")
+    )
+    private List<TreatmentMethod> treatmentMethods;
 
     private double sessionPrice;
 

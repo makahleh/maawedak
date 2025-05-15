@@ -1,5 +1,6 @@
 package com.mak.mawedak.dto;
 
+import com.mak.mawedak.entity.TreatmentMethod;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,8 @@ public class PatientDTO {
     @NotNull(message = "name is required")
     private String name;
 
+    private Integer age;
+
     private Long therapistId;
 
     private String therapistName;
@@ -28,6 +31,8 @@ public class PatientDTO {
 
     @NotNull(message = "paymentMethodId is required")
     private Long paymentMethodId;
+
+    private List<TreatmentMethod> treatmentMethods;
 
     private Long insuranceId;
 
