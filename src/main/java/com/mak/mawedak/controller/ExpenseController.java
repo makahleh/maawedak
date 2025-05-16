@@ -27,14 +27,21 @@ public class ExpenseController {
     }
 
     // Update expense
-    @PutMapping("/{expenseId}")
+    @PutMapping
     public ResponseEntity<ExpenseDTO> updateExpense(@RequestBody ExpenseDTO expenseDTO) {
         ExpenseDTO updatedExpense = expenseService.updateExpense(ContextHolderHelper.getCustomerId(), expenseDTO);
         return new ResponseEntity<>(updatedExpense, HttpStatus.OK);
     }
 
+    // Get by id
+    @GetMapping("/{expenseId}")
+    public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable Long expenseId) {
+        ExpenseDTO expenseDTO = expenseService.getExpense(ContextHolderHelper.getCustomerId(), expenseId);
+        return new ResponseEntity<>(expenseDTO, HttpStatus.OK);
+    }
+
     // Get a list of expenses
-    @GetMapping
+    @GetMapping("/list")
     public ResponseEntity<Page<ExpenseDTO>> getExpenses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size

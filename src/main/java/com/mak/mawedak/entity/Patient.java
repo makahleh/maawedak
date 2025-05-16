@@ -37,6 +37,9 @@ public class Patient {
     @Column
     private Integer age;
 
+    @Column
+    private String phoneNumber;
+
     @ManyToOne
     @JoinColumn(name = "therapist_id")
     private Therapist therapist;

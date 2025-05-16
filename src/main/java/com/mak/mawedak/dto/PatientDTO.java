@@ -2,6 +2,7 @@ package com.mak.mawedak.dto;
 
 import com.mak.mawedak.entity.TreatmentMethod;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,10 @@ public class PatientDTO {
     private String name;
 
     private Integer age;
+
+    @NotNull(message = "Phone number is required")
+    @Pattern(regexp = "\\d{14}", message = "Phone number must be 14 digits")
+    private String phoneNumber;
 
     private Long therapistId;
 

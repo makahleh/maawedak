@@ -53,6 +53,12 @@ public class ExpenseService {
         return expensesPage.map(expenseMapper::toDTO);
     }
 
+    public ExpenseDTO getExpense(Long expenseId, Long customerId) {
+        Expense expense = expenseRepository.findByCustomer_CustomerIdAndExpenseId(customerId, expenseId)
+                .orElseThrow(() -> new RuntimeException("Expense not found"));
+        return expenseMapper.toDTO(expense);
+    }
+
     // Delete expense
     public void deleteExpense(Long customerId, Long expenseId) {
         Expense expense = expenseRepository.findByCustomer_CustomerIdAndExpenseId(customerId, expenseId)

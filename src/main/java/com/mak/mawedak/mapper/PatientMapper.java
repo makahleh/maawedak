@@ -19,6 +19,7 @@ public class PatientMapper {
                 patient.getPatientId(),
                 patient.getName(),
                 patient.getAge(),
+                patient.getPhoneNumber(),
                 patient.getTherapist().getTherapistId(),
                 patient.getTherapist().getName(),
                 patient.getDepartment().getDepartmentId(),
@@ -45,6 +46,7 @@ public class PatientMapper {
         patient.setPatientId(patientDto.getPatientId());
         patient.setName(patientDto.getName());
         patient.setAge(patientDto.getAge());
+        patient.setPhoneNumber(patientDto.getPhoneNumber());
         patient.setTherapist(new Therapist(patientDto.getTherapistId()));
         patient.setDepartment(new Department(patientDto.getDepartmentId()));
         patient.setPaymentMethod(new PaymentMethod(patientDto.getPaymentMethodId()));
