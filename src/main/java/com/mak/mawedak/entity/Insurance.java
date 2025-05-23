@@ -25,6 +25,8 @@ public class Insurance {
     @Column(nullable = false)
     private double percentage;
 
+    private double sessionPrice;
+
     public Insurance(Long id) {
         this.insuranceId = id;
     }

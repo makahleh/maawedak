@@ -12,9 +12,14 @@ import java.util.List;
 public class PatientMapper {
 
     public PatientDTO toDTO(Patient patient) {
-        return toDTO(patient, 0.0, Collections.emptyList());
+        return toDTO(patient, 0.0, 0);
     }
-    public PatientDTO toDTO(Patient patient, double balance, List<SessionDTO> sessions) {
+
+    public PatientDTO toDTO(Patient patient, double balance, int completedSessions) {
+        return toDTO(patient, balance, completedSessions, Collections.emptyList());
+    }
+
+    public PatientDTO toDTO(Patient patient, double balance, int completedSessions, List<SessionDTO> sessions) {
         return new PatientDTO(
                 patient.getPatientId(),
                 patient.getName(),
@@ -32,7 +37,7 @@ public class PatientMapper {
                 patient.getNumberOfTotalSessions(),
                 patient.getNotes(),
                 patient.getCreatedDate().toString(),
-                patient.getSessions() != null ? patient.getSessions().size() : 0,
+                completedSessions,
                 balance,
                 sessions
         );

@@ -58,8 +58,14 @@ public class PatientService {
         Page<Patient> patientsPage =
                 patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
 
-        // Map the entities to DTOs
-        return patientsPage.map(patientMapper::toDTO);
+        return patientsPage.map(patient -> {
+            List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patient.getPatientId());
+            double balance = calculatePatientBalance(sessions);
+            int completedCount = (int) sessions.stream()
+                    .filter(SessionDTO::getStatus)
+                    .count();
+            return patientMapper.toDTO(patient, balance, completedCount);
+        });
     }
 
     // Set patient as inactive
@@ -74,7 +80,10 @@ public class PatientService {
         Patient patient = getPatientById(customerId, patientId);
         List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patientId);
         double balance = calculatePatientBalance(sessions);
-        return Optional.of(patientMapper.toDTO(patient, balance, sessions));
+        int completedCount = (int) sessions.stream()
+                .filter(SessionDTO::getStatus)
+                .count();
+        return Optional.of(patientMapper.toDTO(patient, balance, completedCount, sessions));
     }
 
     public Patient getPatientById(Long customerId, Long patientId) {

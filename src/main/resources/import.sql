@@ -19,7 +19,7 @@ INSERT INTO expense_category (category_id, name) VALUES (1, 'إيجار'), (2, '
 -- CREATE TEST ACCOUNTS
 INSERT INTO customer (customer_id, name, join_date, updated_date) VALUES (1, 'test', '2025-01-01 10:00:00', '2025-01-01 12:00:00');
 
-INSERT INTO insurance (insurance_id,customer_id, name, percentage) VALUES (1,1, 'HealthCare Plus', 80.0), (2,1, 'Premium Shield', 90.0);
+INSERT INTO insurance (insurance_id,customer_id, name, percentage, session_price) VALUES (1,1, 'HealthCare Plus', 80.0, 10,0), (2,1, 'Premium Shield', 90.0, 10.0);
 
 --INSERT INTO therapist (customer_id, name, phone_number, username, password, department_id, hiring_date, updated_date, created_date, is_active, percentage) VALUES (1, 'Mohammad Makahleh', '00962775569227', 'makahleh', '$2a$10$cL3UO3dFgUdsccbILTO4we0uE9j3xewhOMES5UaYgTL2H2rAUD/5q',1, '2025-01-01', '2025-01-01 10:00:00', '2025-01-01 10:00:00', TRUE, 0.10);
 
