@@ -19,11 +19,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     List<Session> findAllByPatient_PatientId(Long patientId);
 
-    // Find all sessions for a specific therapist
-    Page<Session> findAllByTherapist_TherapistId(Long therapistId, Pageable pageable);
-
-    int countByPatient_PatientIdAndStatusTrue(Long patientId);
-
     // Find all sessions for a specific customer
     @Query("SELECT s FROM Session s " +
             "WHERE s.customer.customerId = :customerId " +

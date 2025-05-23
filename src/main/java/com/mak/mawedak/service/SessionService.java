@@ -50,10 +50,6 @@ public class SessionService {
         return sessions.stream().map(sessionMapper::toDTO).toList();
     }
 
-    public int getNumOfCompletedSessionsForPatient(Long patientId) {
-        return sessionRepository.countByPatient_PatientIdAndStatusTrue(patientId);
-    }
-
     public List<SessionDTO> getSessionsForCalender(
             Long customerId,
             LocalDateTime startDate,
