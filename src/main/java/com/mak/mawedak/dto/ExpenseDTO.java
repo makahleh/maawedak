@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,5 @@ public class ExpenseDTO {
     private String categoryName;
     private String details;
     private Double amount;
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 }

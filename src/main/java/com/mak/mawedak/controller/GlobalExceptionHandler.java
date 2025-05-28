@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     // Handle Database Errors (e.g., duplicate keys, missing required data)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDatabaseError(DataIntegrityViolationException ex) {
+        ex.printStackTrace();
         String errorMessage = "Database error: " + ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST); // 400
     }
@@ -55,6 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
         String errorMessage = "Stop! error: " + ex.getMessage();
+        ex.printStackTrace();
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR); // 500
     }
 
@@ -62,6 +64,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
         String errorMessage = "An unexpected error occurred: " + ex.getMessage();
+        ex.printStackTrace();
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR); // 500
     }
 }

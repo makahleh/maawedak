@@ -45,7 +45,7 @@ public class SessionService {
 
     // Get sessions for a specific patient with pagination
     public List<SessionDTO> getSessionsByPatientId(Long patientId) {
-        List<Session> sessions = sessionRepository.findAllByPatient_PatientId(patientId);
+        List<Session> sessions = sessionRepository.findAllByPatient_PatientIdOrderByStartDateTimeDesc(patientId);
 
         return sessions.stream().map(sessionMapper::toDTO).toList();
     }

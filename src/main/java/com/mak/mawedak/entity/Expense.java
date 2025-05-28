@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -39,12 +40,12 @@ public class Expense {
     private Double amount;
 
     @Column
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDate creationDate;
+    private LocalDateTime creationDate;
 
     @UpdateTimestamp
-    private LocalDate updatedDate;
+    private LocalDateTime updatedDate;
 }

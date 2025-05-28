@@ -15,10 +15,27 @@ public class SessionMapper {
             return null;
         }
 
-        Long paymentMethodId = session.getPaymentMethod() != null ? session.getPaymentMethod().getPaymentMethodId() : null;
-        Long insuranceId = session.getInsurance() != null ? session.getInsurance().getInsuranceId() : null;
-        String insuranceName = session.getInsurance() != null ? session.getInsurance().getName() : null;
+        boolean isDone = session.getStatus() != null && session.getStatus();
 
+        Long paymentMethodId;
+
+        if (!isDone) {
+            paymentMethodId = session.getPatient().getPaymentMethod() != null
+                    ? session.getPatient().getPaymentMethod().getPaymentMethodId()
+                    : null;
+        } else {
+            paymentMethodId = session.getPaymentMethod() != null
+                    ? session.getPaymentMethod().getPaymentMethodId()
+                    : null;
+        }
+
+        // Use insurance from session if done, else from patient
+        Insurance insurance = isDone ? session.getInsurance() : session.getPatient().getInsurance();
+        Long insuranceId = insurance != null ? insurance.getInsuranceId() : null;
+        String insuranceName = insurance != null ? insurance.getName() : null;
+
+        // Use payment amount from session if done, else from patient sessionPrice
+        double paymentAmount = isDone ? session.getPaymentAmount() : session.getPatient().getSessionPrice();
 
         return new SessionDTO(
                 session.getSessionId(),
@@ -32,7 +49,7 @@ public class SessionMapper {
                 session.getStartDateTime().toString(),
                 session.getEndDateTime().toString(),
                 session.getNotes(),
-                session.getPaymentAmount(),
+                paymentAmount,
                 session.getStatus(),
                 session.getPatient().getDepartment() != null ? session.getPatient().getDepartment().getDepartmentId() : null
         );
@@ -54,7 +71,7 @@ public class SessionMapper {
         session.setEndDateTime(sessionDto.getEndDateTime() != null ? LocalDateTime.parse(sessionDto.getEndDateTime()) : null);
         session.setNotes(sessionDto.getNotes());
         session.setPaymentAmount(sessionDto.getPaymentAmount());
-        session.setStatus(sessionDto.getStatus());
+        session.setStatus(sessionDto.getStatus() != null && sessionDto.getStatus());
         return session;
     }
 }
