@@ -5,7 +5,7 @@ import java.util.List;
 
 public record DashboardReportDto(
         int completedSessions,
-        int newPatients,
+        int patientsCount,
         BigDecimal totalRevenue,
         BigDecimal totalExpenses,
         List<ChartDataDTO> patientsByDepartment,

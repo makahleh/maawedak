@@ -1,9 +1,8 @@
 package com.mak.mawedak.repository;
 
 import com.mak.mawedak.entity.Session;
+import com.mak.mawedak.repository.projection.CountByIdProjection;
 import com.mak.mawedak.repository.projection.CountByNameProjection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +16,7 @@ import java.util.List;
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
 
-    List<Session> findAllByPatient_PatientId(Long patientId);
+    List<Session> findAllByPatient_PatientIdOrderByStartDateTimeDesc(Long patientId);
 
     // Find all sessions for a specific customer
     @Query("SELECT s FROM Session s " +
@@ -34,6 +33,18 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             @Param("departmentId") Long departmentId);
 
     // For Reports:
+
+    @Query("""
+            SELECT COUNT(DISTINCT s.patient.patientId)
+            FROM Session s
+            WHERE s.patient.customer.customerId = :customerId
+              AND s.startDateTime BETWEEN :from AND :to
+            """)
+    int countActivePatients(@Param("customerId") Long customerId,
+                            @Param("from") LocalDateTime from,
+                            @Param("to") LocalDateTime to);
+
+
     @Query("""
                 SELECT COUNT(s) FROM Session s
                 WHERE s.status = true
@@ -65,7 +76,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     );
 
     @Query("""
-            SELECT s.therapist.name AS therapistName, COUNT(s) AS sessionCount
+            SELECT s.therapist.name AS name, COUNT(s) AS count
             FROM Session s
             WHERE s.customer.id = :customerId AND s.startDateTime BETWEEN :from AND :to
             GROUP BY s.therapist.name
@@ -75,5 +86,29 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );
+
+    @Query("""
+                SELECT s.patient.department.departmentId AS id, COUNT(DISTINCT s.patient.patientId) AS count
+                FROM Session s
+                WHERE s.patient.customer.customerId = :customerId
+                  AND s.startDateTime BETWEEN :from AND :to
+                GROUP BY s.patient.department.departmentId
+            """)
+    List<CountByIdProjection> countPatientsByDepartmentId(@Param("customerId") Long customerId,
+                                                          @Param("from") LocalDateTime from,
+                                                          @Param("to") LocalDateTime to);
+
+    @Query("""
+                SELECT p.paymentMethod.paymentMethodId AS id, COUNT(p) AS count
+                FROM Patient p
+                WHERE p.customer.customerId = :customerId
+                  AND p.createdDate BETWEEN :from AND :to
+                GROUP BY p.paymentMethod.paymentMethodId
+            """)
+    List<CountByIdProjection> countPatientsByPaymentMethod(@Param("customerId") Long customerId,
+                                                           @Param("from") LocalDateTime from,
+                                                           @Param("to") LocalDateTime to);
+
+
 }
 

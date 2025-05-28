@@ -4,7 +4,6 @@ import com.mak.mawedak.dto.ChartDataDTO;
 import com.mak.mawedak.dto.DashboardReportDto;
 import com.mak.mawedak.dto.ValuePercentageByIdDTO;
 import com.mak.mawedak.repository.ExpenseRepository;
-import com.mak.mawedak.repository.PatientRepository;
 import com.mak.mawedak.repository.SessionRepository;
 import com.mak.mawedak.repository.projection.CountByIdProjection;
 import com.mak.mawedak.repository.projection.CountByNameProjection;
@@ -24,30 +23,28 @@ public class DashboardReportService {
     @Autowired
     private SessionRepository sessionRepository;
     @Autowired
-    private PatientRepository patientRepository;
-    @Autowired
     private ExpenseRepository expenseRepository;
 
-    public DashboardReportDto getDashboardReport(Long customerId, LocalDateTime from, LocalDateTime to) {
+    public DashboardReportDto getDashboardReportsData(Long customerId, LocalDateTime from, LocalDateTime to) {
         int completedSessions = sessionRepository.countCompletedSessions(customerId, from, to);
-        int newPatients = patientRepository.countNewPatients(customerId, from, to);
+        int activePatients = sessionRepository.countActivePatients(customerId, from, to);
         BigDecimal totalRevenue = sessionRepository.calculateTotalRevenue(customerId, from, to);
         BigDecimal totalExpenses = expenseRepository.getTotalExpenses(customerId, from, to);
 
         List<ValuePercentageByIdDTO> patientsByDepartmentWithPercentage = getPatientsByDepartmentWithPercentage(customerId, from, to);
         List<ValuePercentageByIdDTO> expensesByCategoryWithPercentage = getExpensesByCategoryWithPercentage(customerId, from, to);
-        List<ValuePercentageByIdDTO> newPatientsByPaymentMethodWithPercentage = getNewPatientsByPaymentMethodWithPercentage(customerId, from, to);
+        List<ValuePercentageByIdDTO> patientsByPaymentMethodWithPercentage = getNewPatientsByPaymentMethodWithPercentage(customerId, from, to);
         List<ValuePercentageByIdDTO> sessionsByTherapist = getSessionsByTherapist(customerId, from, to);
 
         return new DashboardReportDto(
                 completedSessions,
-                newPatients,
+                activePatients,
                 totalRevenue,
                 totalExpenses,
-                mapToChartDataWithPercentage(patientsByDepartmentWithPercentage),
-                mapToChartDataWithPercentage(expensesByCategoryWithPercentage),
-                mapToChartDataWithPercentage(newPatientsByPaymentMethodWithPercentage),
-                mapToChartDataWithPercentage(sessionsByTherapist)
+                mapToChartData(patientsByDepartmentWithPercentage),
+                mapToChartData(expensesByCategoryWithPercentage),
+                mapToChartData(patientsByPaymentMethodWithPercentage),
+                mapToChartData(sessionsByTherapist)
         );
     }
 
@@ -55,7 +52,7 @@ public class DashboardReportService {
             Long customerId, LocalDateTime from, LocalDateTime to
     ) {
         // get grouped count by department
-        List<CountByIdProjection> patientsByDepartmentIds = patientRepository.countNewPatientsByDepartmentId(customerId, from, to);
+        List<CountByIdProjection> patientsByDepartmentIds = sessionRepository.countPatientsByDepartmentId(customerId, from, to);
         int totalPatients = patientsByDepartmentIds.stream().mapToInt(CountByIdProjection::getCount).sum();
 
         // map each with percentage
@@ -65,7 +62,9 @@ public class DashboardReportService {
                         BigDecimal.valueOf(e.getCount()),
                         totalPatients == 0
                                 ? 0.0
-                                : (e.getCount() * 100.0) / totalPatients
+                                : BigDecimal.valueOf((e.getCount() * 100.0) / totalPatients)
+                                .setScale(2, RoundingMode.HALF_UP)
+                                .doubleValue()
                 ))
                 .collect(Collectors.toList());
     }
@@ -96,7 +95,7 @@ public class DashboardReportService {
     public List<ValuePercentageByIdDTO> getNewPatientsByPaymentMethodWithPercentage(
             Long customerId, LocalDateTime from, LocalDateTime to
     ) {
-        List<CountByIdProjection> patientsByPaymentMethod = patientRepository.countNewPatientsByPaymentMethod(customerId, from, to);
+        List<CountByIdProjection> patientsByPaymentMethod = sessionRepository.countPatientsByPaymentMethod(customerId, from, to);
         int totalPatients = patientsByPaymentMethod.stream().mapToInt(CountByIdProjection::getCount).sum();
 
         return patientsByPaymentMethod.stream()
@@ -105,7 +104,9 @@ public class DashboardReportService {
                         BigDecimal.valueOf(e.getCount()),
                         totalPatients == 0
                                 ? 0.0
-                                : (e.getCount() * 100.0) / totalPatients
+                                : BigDecimal.valueOf((e.getCount() * 100.0) / totalPatients)
+                                .setScale(2, RoundingMode.HALF_UP)
+                                .doubleValue()
                 ))
                 .collect(Collectors.toList());
     }
@@ -128,7 +129,7 @@ public class DashboardReportService {
     }
 
 
-    List<ChartDataDTO> mapToChartDataWithPercentage(List<ValuePercentageByIdDTO> data) {
+    List<ChartDataDTO> mapToChartData(List<ValuePercentageByIdDTO> data) {
         return data.stream()
                 .map(d -> {
                     String label = d.id().toString();

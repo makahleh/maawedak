@@ -35,7 +35,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     );
 
     @Query("""
-            SELECT ec.id AS categoryId, COALESCE(SUM(e.amount), 0) AS totalAmount
+            SELECT ec.id AS id, COALESCE(SUM(e.amount), 0) AS total
             FROM Expense e
             JOIN e.expenseCategory ec
             WHERE e.customer.id = :customerId
