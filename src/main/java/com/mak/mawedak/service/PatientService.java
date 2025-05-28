@@ -60,7 +60,7 @@ public class PatientService {
 
         return patientsPage.map(patient -> {
             List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patient.getPatientId());
-            double balance = calculatePatientBalance(sessions);
+            double balance = calculatePatientBalance(sessions, patient);
             int completedCount = (int) sessions.stream()
                     .filter(SessionDTO::getStatus)
                     .count();
@@ -79,9 +79,9 @@ public class PatientService {
     public Optional<PatientDTO> getPatientDetails(Long customerId, Long patientId) {
         Patient patient = getPatientById(customerId, patientId);
         List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patientId);
-        double balance = calculatePatientBalance(sessions);
+        double balance = calculatePatientBalance(sessions, patient);
         int completedCount = (int) sessions.stream()
-                .filter(SessionDTO::getStatus)
+                .filter(session -> session.getStatus() != null && session.getStatus())
                 .count();
         return Optional.of(patientMapper.toDTO(patient, balance, completedCount, sessions));
     }
@@ -91,9 +91,9 @@ public class PatientService {
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 
-    private double calculatePatientBalance(List<SessionDTO> sessions) {
+    private double calculatePatientBalance(List<SessionDTO> sessions, Patient patient) {
         return sessions.stream()
-                .mapToDouble(SessionDTO::getPaymentAmount)
+                .mapToDouble(s -> s.getPaymentAmount() - patient.getSessionPrice())
                 .sum();
     }
 

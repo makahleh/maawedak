@@ -6,9 +6,8 @@ import com.mak.mawedak.entity.Role;
 import com.mak.mawedak.entity.Therapist;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -39,7 +38,7 @@ public class TherapistMapper {
         therapist.setTherapistId(therapistDto.getTherapistId());
         therapist.setName(therapistDto.getName());
         therapist.setPhoneNumber(therapistDto.getPhoneNumber());
-        therapist.setHiringDate(LocalDate.parse(therapistDto.getHiringDate()));
+        therapist.setHiringDate(LocalDateTime.parse(therapistDto.getHiringDate()));
         therapist.setUsername(therapistDto.getUsername());
         therapist.setPassword(therapistDto.getPassword() == null ? therapist.getPassword() : therapistDto.getPassword());
         therapist.setDepartment(new Department(therapistDto.getDepartmentId(), null));

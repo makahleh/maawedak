@@ -68,7 +68,7 @@ public class TherapistService implements UserDetailsService {
     public Page<TherapistDTO> getTherapists(Long customerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Therapist> therapistsPage =
-                therapistRepository.findAllByCustomer_CustomerId(customerId, pageable);
+                therapistRepository.findAllByCustomer_CustomerIdAndIsActiveOrderByCreatedDateDesc(customerId, true, pageable);
 
         // Map the entities to DTOs
         return therapistsPage.map(therapistMapper::toDTO);

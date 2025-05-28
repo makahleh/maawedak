@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -43,15 +43,15 @@ public class Therapist {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    private LocalDate hiringDate;
+    private LocalDateTime hiringDate;
 
     @Column(nullable = false)
     @UpdateTimestamp
-    private LocalDate updatedDate;
+    private LocalDateTime updatedDate;
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     @Column(nullable = false)
     private Boolean isActive = true;
