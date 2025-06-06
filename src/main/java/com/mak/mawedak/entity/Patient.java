@@ -68,7 +68,7 @@ public class Patient {
 
     private int numberOfTotalSessions;
 
-    @Column()
+    @Column(length = 2000)
     private String notes;
 
     @Column(nullable = false)

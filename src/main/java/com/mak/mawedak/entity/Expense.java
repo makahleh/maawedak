@@ -33,7 +33,7 @@ public class Expense {
     @JoinColumn(name = "category_id")
     private ExpenseCategory expenseCategory;
 
-    @Column
+    @Column(length = 2000)
     private String details;
 
     @Column(nullable = false)

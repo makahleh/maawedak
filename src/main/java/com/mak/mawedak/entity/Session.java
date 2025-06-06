@@ -43,7 +43,7 @@ public class Session {
     @Column
     private LocalDateTime endDateTime;
 
-    @Column(nullable = true)
+    @Column(length = 2000)
     private String notes;
 
     @Column(nullable = false)
