@@ -16,7 +16,7 @@ import java.util.List;
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
 
-    List<Session> findAllByPatient_PatientIdOrderByStartDateTimeDesc(Long patientId);
+    List<Session> findAllByPatient_PatientIdAndStatusOrderByStartDateTimeDesc(Long patientId, boolean status);
 
     // Find all sessions for a specific customer
     @Query("SELECT s FROM Session s " +
@@ -37,7 +37,8 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Query("""
             SELECT COUNT(DISTINCT s.patient.patientId)
             FROM Session s
-            WHERE s.patient.customer.customerId = :customerId
+            WHERE s.customer.customerId = :customerId
+              AND s.patient.isActive = true
               AND s.startDateTime BETWEEN :from AND :to
             """)
     int countActivePatients(@Param("customerId") Long customerId,
@@ -79,6 +80,8 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
             SELECT s.therapist.name AS name, COUNT(s) AS count
             FROM Session s
             WHERE s.customer.id = :customerId AND s.startDateTime BETWEEN :from AND :to
+            AND s.therapist.isActive = true
+            AND s.status = true
             GROUP BY s.therapist.name
             """)
     List<CountByNameProjection> countSessionsByTherapist(
@@ -90,8 +93,10 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Query("""
                 SELECT s.patient.department.departmentId AS id, COUNT(DISTINCT s.patient.patientId) AS count
                 FROM Session s
-                WHERE s.patient.customer.customerId = :customerId
+                WHERE s.customer.customerId = :customerId
                   AND s.startDateTime BETWEEN :from AND :to
+                  AND s.patient.isActive = true
+                  AND s.status = true
                 GROUP BY s.patient.department.departmentId
             """)
     List<CountByIdProjection> countPatientsByDepartmentId(@Param("customerId") Long customerId,
@@ -99,11 +104,12 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
                                                           @Param("to") LocalDateTime to);
 
     @Query("""
-                SELECT p.paymentMethod.paymentMethodId AS id, COUNT(p) AS count
-                FROM Patient p
-                WHERE p.customer.customerId = :customerId
-                  AND p.createdDate BETWEEN :from AND :to
-                GROUP BY p.paymentMethod.paymentMethodId
+                SELECT s.paymentMethod.paymentMethodId AS id, COUNT(DISTINCT s.patient.patientId) AS count
+                FROM Session s
+                WHERE s.customer.customerId = :customerId
+                  AND s.startDateTime BETWEEN :from AND :to
+                  AND s.status = true
+                GROUP BY s.paymentMethod.paymentMethodId
             """)
     List<CountByIdProjection> countPatientsByPaymentMethod(@Param("customerId") Long customerId,
                                                            @Param("from") LocalDateTime from,

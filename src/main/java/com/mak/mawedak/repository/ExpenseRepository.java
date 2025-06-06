@@ -26,7 +26,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
                 SELECT COALESCE(SUM(e.amount), 0)
                 FROM Expense e
                 WHERE e.customer.id = :customerId
-                AND e.creationDate BETWEEN :from AND :to
+                AND e.dueDate BETWEEN :from AND :to
             """)
     BigDecimal getTotalExpenses(
             @Param("customerId") Long customerId,
@@ -39,7 +39,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             FROM Expense e
             JOIN e.expenseCategory ec
             WHERE e.customer.id = :customerId
-              AND e.creationDate BETWEEN :from AND :to
+              AND e.dueDate BETWEEN :from AND :to
             GROUP BY ec.id
             """)
     List<SumByIdProjection> sumExpensesByCategory(

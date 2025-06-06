@@ -59,12 +59,9 @@ public class PatientService {
                 patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
 
         return patientsPage.map(patient -> {
-            List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patient.getPatientId());
+            List<SessionDTO> sessions = sessionService.getCompletedSessionsByPatientId(patient.getPatientId());
             double balance = calculatePatientBalance(sessions, patient);
-            int completedCount = (int) sessions.stream()
-                    .filter(SessionDTO::getStatus)
-                    .count();
-            return patientMapper.toDTO(patient, balance, completedCount);
+            return patientMapper.toDTO(patient, balance, sessions.size());
         });
     }
 
@@ -78,12 +75,9 @@ public class PatientService {
     // Get patient by ID
     public Optional<PatientDTO> getPatientDetails(Long customerId, Long patientId) {
         Patient patient = getPatientById(customerId, patientId);
-        List<SessionDTO> sessions = sessionService.getSessionsByPatientId(patientId);
-        double balance = calculatePatientBalance(sessions, patient);
-        int completedCount = (int) sessions.stream()
-                .filter(session -> session.getStatus() != null && session.getStatus())
-                .count();
-        return Optional.of(patientMapper.toDTO(patient, balance, completedCount, sessions));
+        List<SessionDTO> completedSessions = sessionService.getCompletedSessionsByPatientId(patientId);
+        double balance = calculatePatientBalance(completedSessions, patient);
+        return Optional.of(patientMapper.toDTO(patient, balance, completedSessions.size(), completedSessions));
     }
 
     public Patient getPatientById(Long customerId, Long patientId) {
