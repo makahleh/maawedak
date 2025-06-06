@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -15,9 +17,14 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long insuranceId;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @ManyToMany
+    @JoinTable(
+            name = "insurance_customer",
+            joinColumns = @JoinColumn(name = "insurance_id"),
+            inverseJoinColumns = @JoinColumn(name = "customer_id")
+    )
+    private List<Customer> customers;
+
 
     @Column(nullable = false, unique = true)
     private String name;

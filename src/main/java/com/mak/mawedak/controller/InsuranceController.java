@@ -23,7 +23,7 @@ public class InsuranceController {
     @GetMapping("/list")
     public ResponseEntity<Page<InsuranceDTO>> getPatients(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "100") int size) {
         Page<InsuranceDTO> patientsPage = insuranceService.getInsurances(
                 ContextHolderHelper.getCustomerId(), page, size);
         return new ResponseEntity<>(patientsPage, HttpStatus.OK);
