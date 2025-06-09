@@ -85,6 +85,9 @@ public class Patient {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Session> sessions;
 
+    @Column
+    private LocalDateTime expiryDate;
+
     public Patient(Long id) {
         this.patientId = id;
     }

@@ -38,6 +38,7 @@ public class PatientMapper {
                 patient.getNotes(),
                 patient.getCreatedDate().toString(),
                 completedSessions,
+                patient.getExpiryDate(),
                 balance,
                 sessions
         );
@@ -55,11 +56,13 @@ public class PatientMapper {
         patient.setTherapist(new Therapist(patientDto.getTherapistId()));
         patient.setDepartment(new Department(patientDto.getDepartmentId()));
         patient.setPaymentMethod(new PaymentMethod(patientDto.getPaymentMethodId()));
+        patient.setExpiryDate(patientDto.getExpiryDate());
         patient.setTreatmentMethods(patientDto.getTreatmentMethods());
         patient.setInsurance(patientDto.getInsuranceId() != null ? new Insurance(patientDto.getInsuranceId()) : null);
         patient.setSessionPrice(patientDto.getSessionPrice());
         patient.setNumberOfTotalSessions(patientDto.getNumberOfTotalSessions());
         patient.setNotes(patientDto.getNotes());
+
         return patient;
     }
 }
