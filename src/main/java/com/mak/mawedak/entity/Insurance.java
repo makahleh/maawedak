@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,10 +30,13 @@ public class Insurance {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private double percentage;
+    @Column(name = "tax_number")
+    private String taxNumber;
 
     private double sessionPrice;
+
+    @OneToMany(mappedBy = "insurance", cascade = CascadeType.ALL)
+    private List<SubInsurance> subInsurances = new ArrayList<>();
 
     public Insurance(Long id) {
         this.insuranceId = id;

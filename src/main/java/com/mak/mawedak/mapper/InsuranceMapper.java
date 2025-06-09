@@ -2,6 +2,7 @@ package com.mak.mawedak.mapper;
 
 import com.mak.mawedak.dto.InsuranceDTO;
 import com.mak.mawedak.entity.Insurance;
+import com.mak.mawedak.entity.SubInsurance;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,10 +11,15 @@ public class InsuranceMapper {
         if (insurance == null) {
             return null;
         }
+
+        var subInsurancesDTO = insurance.getSubInsurances() != null
+                ? IdNameMapper.toDtoList(insurance.getSubInsurances(), SubInsurance::getId, SubInsurance::getName)
+                : null;
+
         return new InsuranceDTO(
                 insurance.getInsuranceId(),
                 insurance.getName(),
-                insurance.getPercentage()
+                subInsurancesDTO
         );
     }
 
@@ -24,7 +30,6 @@ public class InsuranceMapper {
         Insurance insurance = existinInsurance != null ? existinInsurance : new Insurance();
         insurance.setInsuranceId(insuranceDTO.getInsuranceId());
         insurance.setName(insuranceDTO.getName());
-        insurance.setPercentage(insuranceDTO.getPercentage());
         return insurance;
     }
 }

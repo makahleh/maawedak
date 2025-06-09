@@ -91,3 +91,15 @@ INSERT INTO session (customer_id, patient_id, therapist_id, payment_method_id, i
 (1, 10, 3, 2, 1, '2025-03-18 08:30:00', '2025-03-18 09:00:00', 'جلسة متابعة بعد الجراحة', 30.0, false),
 (1, 6, 2, 1, NULL, '2025-03-19 11:00:00', '2025-03-19 11:30:00', 'علاج طبيعي للكوع', 10.0, false),
 (1, 12, 5, 2, 2, '2025-03-20 13:00:00', '2025-03-20 13:30:00', 'جلسة تدليك لتخفيف التوتر', 40.0, false);
+
+
+
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (1, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (2, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (3, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (4, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (5, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (6, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (7, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (8, 1);
+INSERT INTO insurance_customer (insurance_id, customer_id) VALUES (9, 1);
