@@ -59,16 +59,19 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     );
 
     @Query("""
-                SELECT SUM(
-                    CASE
-                        WHEN s.paymentMethod.id = 1 THEN s.paymentAmount
-                        WHEN s.paymentMethod.id = 2 THEN s.paymentAmount + (s.insurance.sessionPrice * s.insurance.percentage)
-                        ELSE 0
-                    END
-                )
-                FROM Session s
-                WHERE s.customer.id = :customerId
-                AND s.startDateTime BETWEEN :from AND :to
+            SELECT SUM(
+                CASE
+                    WHEN s.paymentMethod.id = 1 THEN COALESCE(s.paymentAmount, 0)
+                    WHEN s.paymentMethod.id = 2 THEN COALESCE(i.sessionPrice, 0)
+                    WHEN s.paymentMethod.id = 3 THEN COALESCE(s.paymentAmount, 0)
+                    ELSE 0
+                END
+            )
+            FROM Session s
+            LEFT JOIN s.insurance i
+            WHERE s.customer.id = :customerId
+              AND s.status = true
+              AND s.startDateTime BETWEEN :from AND :to
             """)
     BigDecimal calculateTotalRevenue(
             @Param("customerId") Long customerId,
