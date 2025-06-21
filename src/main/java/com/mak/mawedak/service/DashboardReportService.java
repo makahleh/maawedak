@@ -4,6 +4,7 @@ import com.mak.mawedak.dto.ChartDataDTO;
 import com.mak.mawedak.dto.DashboardReportDto;
 import com.mak.mawedak.dto.ValuePercentageByIdDTO;
 import com.mak.mawedak.repository.ExpenseRepository;
+import com.mak.mawedak.repository.PaymentRepository;
 import com.mak.mawedak.repository.SessionRepository;
 import com.mak.mawedak.repository.projection.CountByIdProjection;
 import com.mak.mawedak.repository.projection.CountByNameProjection;
@@ -24,11 +25,14 @@ public class DashboardReportService {
     private SessionRepository sessionRepository;
     @Autowired
     private ExpenseRepository expenseRepository;
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     public DashboardReportDto getDashboardReportsData(Long customerId, LocalDateTime from, LocalDateTime to) {
         int completedSessions = sessionRepository.countCompletedSessions(customerId, from, to);
         int activePatients = sessionRepository.countActivePatients(customerId, from, to);
-        BigDecimal totalRevenue = sessionRepository.calculateTotalRevenue(customerId, from, to);
+        BigDecimal totalRevenue = sessionRepository.sumRevenueForPerSessionAndPackagesSessions(customerId, from, to).add(
+                sessionRepository.sumRevenueForInsuranceSessions(customerId, from, to));
         BigDecimal totalExpenses = expenseRepository.getTotalExpenses(customerId, from, to);
 
         List<ValuePercentageByIdDTO> patientsByDepartmentWithPercentage = getPatientsByDepartmentWithPercentage(customerId, from, to);
@@ -95,7 +99,7 @@ public class DashboardReportService {
     public List<ValuePercentageByIdDTO> getNewPatientsByPaymentMethodWithPercentage(
             Long customerId, LocalDateTime from, LocalDateTime to
     ) {
-        List<CountByIdProjection> patientsByPaymentMethod = sessionRepository.countPatientsByPaymentMethod(customerId, from, to);
+        List<CountByIdProjection> patientsByPaymentMethod = paymentRepository.countPatientsByPaymentMethod(customerId, from, to);
         int totalPatients = patientsByPaymentMethod.stream().mapToInt(CountByIdProjection::getCount).sum();
 
         return patientsByPaymentMethod.stream()

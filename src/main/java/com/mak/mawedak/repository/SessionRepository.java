@@ -16,7 +16,7 @@ import java.util.List;
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
 
-    List<Session> findAllByPatient_PatientIdAndStatusOrderByStartDateTimeDesc(Long patientId, boolean status);
+//    List<Session> findAllByPatient_PatientIdAndStatusOrderByStartDateTimeDesc(Long patientId, boolean status);
 
     // Find all sessions for a specific customer
     @Query("SELECT s FROM Session s " +
@@ -35,11 +35,10 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     // For Reports:
 
     @Query("""
-            SELECT COUNT(DISTINCT s.patient.patientId)
-            FROM Session s
-            WHERE s.customer.customerId = :customerId
-              AND s.patient.isActive = true
-              AND s.startDateTime BETWEEN :from AND :to
+                SELECT COUNT(DISTINCT s.patient.patientId)
+                FROM Session s
+                WHERE s.customer.customerId = :customerId
+                  AND s.startDateTime BETWEEN :from AND :to
             """)
     int countActivePatients(@Param("customerId") Long customerId,
                             @Param("from") LocalDateTime from,
@@ -48,9 +47,9 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     @Query("""
                 SELECT COUNT(s) FROM Session s
-                WHERE s.status = true
-                AND s.customer.customerId = :customerId
-                AND s.startDateTime BETWEEN :from AND :to
+                WHERE s.customer.customerId = :customerId
+                  AND s.sessionStatus.sessionStatusId = 2
+                  AND s.startDateTime BETWEEN :from AND :to
             """)
     int countCompletedSessions(
             @Param("customerId") Long customerId,
@@ -59,32 +58,41 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     );
 
     @Query("""
-            SELECT SUM(
-                CASE
-                    WHEN s.paymentMethod.id = 1 THEN COALESCE(s.paymentAmount, 0)
-                    WHEN s.paymentMethod.id = 2 THEN COALESCE(i.sessionPrice, 0)
-                    WHEN s.paymentMethod.id = 3 THEN COALESCE(s.paymentAmount, 0)
-                    ELSE 0
-                END
-            )
-            FROM Session s
-            LEFT JOIN s.insurance i
-            WHERE s.customer.id = :customerId
-              AND s.status = true
-              AND s.startDateTime BETWEEN :from AND :to
+                SELECT COALESCE(SUM(p.amount), 0)
+                FROM Session s
+                JOIN s.payment p
+                WHERE s.customer.customerId = :customerId
+                  AND s.sessionStatus.sessionStatusId = 2
+                  AND s.startDateTime BETWEEN :from AND :to
+                  AND s.subscription.subscriptionMethod.subscriptionMethodId IN (1, 3)
             """)
-    BigDecimal calculateTotalRevenue(
+    BigDecimal sumRevenueForPerSessionAndPackagesSessions(
             @Param("customerId") Long customerId,
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to
     );
 
     @Query("""
+                SELECT COUNT(s)
+                FROM Session s
+                WHERE s.customer.customerId = :customerId
+                  AND s.sessionStatus.sessionStatusId = 2
+                  AND s.subscription.subscriptionMethod.subscriptionMethodId = 2
+                  AND s.startDateTime BETWEEN :from AND :to
+            """)
+    BigDecimal sumRevenueForInsuranceSessions(
+            @Param("customerId") Long customerId,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+    );
+
+
+    @Query("""
             SELECT s.therapist.name AS name, COUNT(s) AS count
             FROM Session s
             WHERE s.customer.id = :customerId AND s.startDateTime BETWEEN :from AND :to
             AND s.therapist.isActive = true
-            AND s.status = true
+            AND s.sessionStatus.sessionStatusId = 2
             GROUP BY s.therapist.name
             """)
     List<CountByNameProjection> countSessionsByTherapist(
@@ -99,24 +107,12 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
                 WHERE s.customer.customerId = :customerId
                   AND s.startDateTime BETWEEN :from AND :to
                   AND s.patient.isActive = true
-                  AND s.status = true
+                  AND s.sessionStatus.sessionStatusId = 2
                 GROUP BY s.patient.department.departmentId
             """)
     List<CountByIdProjection> countPatientsByDepartmentId(@Param("customerId") Long customerId,
                                                           @Param("from") LocalDateTime from,
                                                           @Param("to") LocalDateTime to);
-
-    @Query("""
-                SELECT s.paymentMethod.paymentMethodId AS id, COUNT(DISTINCT s.patient.patientId) AS count
-                FROM Session s
-                WHERE s.customer.customerId = :customerId
-                  AND s.startDateTime BETWEEN :from AND :to
-                  AND s.status = true
-                GROUP BY s.paymentMethod.paymentMethodId
-            """)
-    List<CountByIdProjection> countPatientsByPaymentMethod(@Param("customerId") Long customerId,
-                                                           @Param("from") LocalDateTime from,
-                                                           @Param("to") LocalDateTime to);
 
 
 }

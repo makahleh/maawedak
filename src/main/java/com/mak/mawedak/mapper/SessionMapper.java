@@ -1,78 +1,77 @@
 package com.mak.mawedak.mapper;
 
-import com.mak.mawedak.dto.SessionDTO;
+import com.mak.mawedak.dto.*;
 import com.mak.mawedak.entity.*;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 
-@Component
 public class SessionMapper {
 
-    // Convert Session entity to SessionDTO
-    public SessionDTO toDTO(Session session) {
+    public static SessionDTO toDTO(Session session) {
         if (session == null) {
             return null;
         }
+        SessionDTO dto = new SessionDTO();
+        dto.setSessionId(session.getSessionId());
 
-        boolean isDone = session.getStatus() != null && session.getStatus();
-
-        Long paymentMethodId;
-
-        if (!isDone) {
-            paymentMethodId = session.getPatient().getPaymentMethod() != null
-                    ? session.getPatient().getPaymentMethod().getPaymentMethodId()
-                    : null;
-        } else {
-            paymentMethodId = session.getPaymentMethod() != null
-                    ? session.getPaymentMethod().getPaymentMethodId()
-                    : null;
+        // Map patient and therapist as IdNameDTO
+        if (session.getPatient() != null) {
+            dto.setPatient(new IdNameDTO(session.getPatient().getPatientId(), session.getPatient().getName()));
+        }
+        if (session.getTherapist() != null) {
+            dto.setTherapist(new IdNameDTO(session.getTherapist().getTherapistId(), session.getTherapist().getName()));
         }
 
-        // Use insurance from session if done, else from patient
-        Insurance insurance = isDone ? session.getInsurance() : session.getPatient().getInsurance();
-        Long insuranceId = insurance != null ? insurance.getInsuranceId() : null;
-        String insuranceName = insurance != null ? insurance.getName() : null;
+        if (session.getSubscription() != null) {
+            dto.setActiveSubscription(SubscriptionMapper.toDTO(session.getSubscription()));
+        }
 
-        // Use payment amount from session if done, else from patient sessionPrice
-        double paymentAmount = isDone ? session.getPaymentAmount() : session.getPatient().getSessionPrice();
+        if (session.getPayment() != null) {
+            dto.setPayment(PaymentMapper.toDTO(session.getPayment()));
+        }
 
-        return new SessionDTO(
-                session.getSessionId(),
-                session.getPatient().getPatientId(),
-                session.getPatient().getName(),
-                session.getTherapist().getTherapistId(),
-                session.getTherapist().getName(),
-                paymentMethodId,
-                insuranceId,
-                insuranceName,
-                session.getStartDateTime().toString(),
-                session.getEndDateTime().toString(),
-                session.getNotes(),
-                paymentAmount,
-                session.getStatus(),
-                session.getPatient().getDepartment() != null ? session.getPatient().getDepartment().getDepartmentId() : null
-        );
+        dto.setStartDateTime(session.getStartDateTime() != null ? session.getStartDateTime().toString() : null);
+        dto.setEndDateTime(session.getEndDateTime() != null ? session.getEndDateTime().toString() : null);
+        dto.setNotes(session.getNotes());
+        dto.setStatusId(session.getSessionStatus() != null ? session.getSessionStatus().getSessionStatusId() : null);
+
+        return dto;
     }
 
-    // Convert SessionDTO to Session entity
-    public Session toEntity(SessionDTO sessionDto, Customer customer) {
-        if (sessionDto == null) {
+    public static Session toEntity(SessionDTO dto) {
+        if (dto == null) {
             return null;
         }
         Session session = new Session();
-        session.setSessionId(sessionDto.getSessionId());
-        session.setCustomer(customer);
-        session.setPatient(new Patient(sessionDto.getPatientId()));
-        session.setTherapist(sessionDto.getTherapistId() != null ? new Therapist(sessionDto.getTherapistId()) : null);
-        session.setPaymentMethod(sessionDto.getPaymentMethodId() != null ? new PaymentMethod(sessionDto.getPaymentMethodId()) : null);
-        session.setInsurance(sessionDto.getInsuranceId() != null ? new Insurance(sessionDto.getInsuranceId()) : null);
-        session.setStartDateTime(sessionDto.getStartDateTime() != null ? LocalDateTime.parse(sessionDto.getStartDateTime()) : null);
-        session.setEndDateTime(sessionDto.getEndDateTime() != null ? LocalDateTime.parse(sessionDto.getEndDateTime()) : null);
-        session.setNotes(sessionDto.getNotes());
-        session.setPaymentAmount(sessionDto.getPaymentAmount());
-        session.setStatus(sessionDto.getStatus() != null && sessionDto.getStatus());
+        session.setSessionId(dto.getSessionId());
+
+        // Set patient and therapist by ID only
+        Patient patient = null;
+        if (dto.getPatient() != null && dto.getPatient().getId() != null) {
+            patient = new Patient(dto.getPatient().getId());
+            session.setPatient(patient);
+        }
+        if (dto.getTherapist() != null && dto.getTherapist().getId() != null) {
+            session.setTherapist(new Therapist(dto.getTherapist().getId()));
+        }
+        if (dto.getActiveSubscription() != null && dto.getActiveSubscription().getSubscriptionId() != null) {
+            var subscriptionId = dto.getActiveSubscription().getSubscriptionId();
+            session.setSubscription(new Subscription(subscriptionId));
+
+            // just to avoid setting subscriptionId again in Payment object when creating a new session
+            if (dto.getPayment() != null) {
+                session.setPayment(PaymentMapper.toEntity(dto.getPayment(), patient, subscriptionId));
+            }
+        }
+
+        session.setStartDateTime(dto.getStartDateTime() != null ? LocalDateTime.parse(dto.getStartDateTime()) : null);
+        session.setEndDateTime(dto.getEndDateTime() != null ? LocalDateTime.parse(dto.getEndDateTime()) : null);
+        session.setNotes(dto.getNotes());
+
+        // Set status by ID if needed (assuming SessionStatus has a constructor with ID)
+        if (dto.getStatusId() != null) {
+            session.setSessionStatus(new SessionStatus(dto.getStatusId()));
+        }
+
         return session;
     }
 }
-

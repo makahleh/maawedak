@@ -9,12 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -31,11 +25,14 @@ public class Patient {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String name;
 
     @Column
     private Integer age;
+
+    @Column
+    private String nationalNumber;
 
     @Column
     private String phoneNumber;
@@ -48,14 +45,6 @@ public class Patient {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_method_id")
-    private PaymentMethod paymentMethod;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "insurance_id")
-    private Insurance insurance;
-
     @ManyToMany
     @JoinTable(
             name = "patient_treatment_method",
@@ -64,14 +53,21 @@ public class Patient {
     )
     private List<TreatmentMethod> treatmentMethods;
 
-    private double sessionPrice;
-
-    private int numberOfTotalSessions;
-
     @Column(length = 2000)
     private String notes;
 
-    @Column(nullable = false)
+    // Subscription details
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
+
+    // Payment details
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Payment> payments;
+
+    // sessions history
+    @OneToMany(mappedBy = "patient")
+    private List<Session> sessions;
+
     private boolean isActive = true;
 
     @CreationTimestamp
@@ -81,12 +77,6 @@ public class Patient {
     @UpdateTimestamp
     @Column(nullable = false)
     private LocalDateTime updatedDate;
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Session> sessions;
-
-    @Column
-    private LocalDateTime expiryDate;
 
     public Patient(Long id) {
         this.patientId = id;

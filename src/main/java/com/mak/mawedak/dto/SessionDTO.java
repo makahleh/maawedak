@@ -1,7 +1,5 @@
 package com.mak.mawedak.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,19 +11,13 @@ public class SessionDTO {
 
     private Long sessionId;
 
-    private Long patientId;
+    private IdNameDTO patient;
 
-    private String patientName;
+    private IdNameDTO therapist;
 
-    private Long therapistId;
+    private SubscriptionDTO activeSubscription;
 
-    private String therapistName;
-
-    private Long paymentMethodId;
-
-    private Long insuranceId;
-
-    private String insuranceName;
+    private PaymentDTO payment;
 
     private String startDateTime;
 
@@ -33,9 +25,5 @@ public class SessionDTO {
 
     private String notes;
 
-    private double paymentAmount;
-
-    private Boolean status = false;
-
-    private Long patientDepartmentId;
+    private Long statusId;
 }

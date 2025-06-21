@@ -23,9 +23,6 @@ public class PatientService {
     private PatientRepository patientRepository;
 
     @Autowired
-    private PatientMapper patientMapper;
-
-    @Autowired
     @Lazy // used to break cyclic dependency with session service, when we need PatientService in session service
     private SessionService sessionService;
 
@@ -46,10 +43,10 @@ public class PatientService {
     }
 
     private PatientDTO savePatient(Long customerId, PatientDTO patientDto, Patient existingPatient) {
-        Patient patient = patientMapper.toEntity(patientDto, existingPatient);
+        Patient patient = PatientMapper.toEntity(patientDto, existingPatient);
         patient.setCustomer(new Customer(customerId));
         patient = patientRepository.save(patient);
-        return patientMapper.toDTO(patient);
+        return PatientMapper.toDTO(patient);
     }
 
     // Get Page of patients by customer ID
@@ -58,11 +55,7 @@ public class PatientService {
         Page<Patient> patientsPage =
                 patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
 
-        return patientsPage.map(patient -> {
-            List<SessionDTO> sessions = sessionService.getCompletedSessionsByPatientId(patient.getPatientId());
-            double balance = calculatePatientBalance(sessions, patient);
-            return patientMapper.toDTO(patient, balance, sessions.size());
-        });
+        return patientsPage.map(PatientMapper::toDTO);
     }
 
     // Set patient as inactive
@@ -75,20 +68,12 @@ public class PatientService {
     // Get patient by ID
     public Optional<PatientDTO> getPatientDetails(Long customerId, Long patientId) {
         Patient patient = getPatientById(customerId, patientId);
-        List<SessionDTO> completedSessions = sessionService.getCompletedSessionsByPatientId(patientId);
-        double balance = calculatePatientBalance(completedSessions, patient);
-        return Optional.of(patientMapper.toDTO(patient, balance, completedSessions.size(), completedSessions));
+        return Optional.of(PatientMapper.toDTO(patient));
     }
 
     public Patient getPatientById(Long customerId, Long patientId) {
         return patientRepository.findByCustomer_CustomerIdAndPatientIdAndIsActive(customerId, patientId, true)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
-    }
-
-    private double calculatePatientBalance(List<SessionDTO> sessions, Patient patient) {
-        return sessions.stream()
-                .mapToDouble(s -> s.getPaymentAmount() - patient.getSessionPrice())
-                .sum();
     }
 
     public Page<PatientDTO> searchPatients(Long customerId, String searchTerm, int page, int size) {
@@ -99,8 +84,7 @@ public class PatientService {
                 customerId,
                 true,
                 pageable);
-        return patients.map(patientMapper::toDTO);
+        return patients.map(PatientMapper::toDTO);
     }
-
 }
 
