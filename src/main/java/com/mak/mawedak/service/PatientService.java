@@ -55,7 +55,7 @@ public class PatientService {
         Page<Patient> patientsPage =
                 patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
 
-        return patientsPage.map(PatientMapper::toDTO);
+        return patientsPage.map(p -> PatientMapper.toDTO(p, false));
     }
 
     // Set patient as inactive
@@ -68,7 +68,7 @@ public class PatientService {
     // Get patient by ID
     public Optional<PatientDTO> getPatientDetails(Long customerId, Long patientId) {
         Patient patient = getPatientById(customerId, patientId);
-        return Optional.of(PatientMapper.toDTO(patient));
+        return Optional.of(PatientMapper.toDTO(patient, true));
     }
 
     public Patient getPatientById(Long customerId, Long patientId) {
@@ -84,7 +84,7 @@ public class PatientService {
                 customerId,
                 true,
                 pageable);
-        return patients.map(PatientMapper::toDTO);
+        return patients.map(p -> PatientMapper.toDTO(p, false));
     }
 }
 

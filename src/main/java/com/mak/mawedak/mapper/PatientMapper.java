@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class PatientMapper {
 
-    public static PatientDTO toDTO(Patient patient) {
+    public static PatientDTO toDTO(Patient patient, boolean getForProfile) {
         if (patient == null) {
             return null;
         }
@@ -57,7 +57,7 @@ public class PatientMapper {
             );
         }
 
-        if (patient.getPayments() != null) {
+        if (patient.getPayments() != null && getForProfile) {
             patientDTO.setPayments(
                     patient.getPayments().stream()
                             .map(PaymentMapper::toDTO)
@@ -65,7 +65,7 @@ public class PatientMapper {
             );
         }
 
-        if (patient.getSessions() != null) {
+        if (patient.getSessions() != null && getForProfile) {
             patientDTO.setSessions(
                     patient.getSessions().stream()
                             .map(SessionMapper::toDTO)
