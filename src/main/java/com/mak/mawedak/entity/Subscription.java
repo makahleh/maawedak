@@ -24,7 +24,7 @@ public class Subscription {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    @OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "subscription", orphanRemoval = true)
     private List<Session> sessions;
 
     @OneToMany(mappedBy = "subscription")

@@ -33,7 +33,7 @@ public class Session {
     @JoinColumn(name = "subscription_id", nullable = true)
     private Subscription subscription;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, optional = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "payment_id", nullable = true)
     private Payment payment;
 

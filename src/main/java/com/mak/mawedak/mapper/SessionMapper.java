@@ -59,7 +59,7 @@ public class SessionMapper {
 
             // just to avoid setting subscriptionId again in Payment object when creating a new session
             if (dto.getPayment() != null) {
-                session.setPayment(PaymentMapper.toEntity(dto.getPayment(), patient, subscriptionId));
+                session.setPayment(PaymentMapper.toEntity(dto.getPayment(), patient, null, subscriptionId));
             }
         }
 

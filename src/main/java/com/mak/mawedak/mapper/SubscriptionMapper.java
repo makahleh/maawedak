@@ -58,10 +58,10 @@ public class SubscriptionMapper {
         return dto;
     }
 
-    public static Subscription toEntity(SubscriptionDTO dto, Patient patient) {
+    public static Subscription toEntity(SubscriptionDTO dto, Patient patient, Subscription existingSubscription) {
         if (dto == null) return null;
 
-        Subscription subscription = new Subscription();
+        Subscription subscription = existingSubscription != null ? existingSubscription : new Subscription();
         subscription.setSubscriptionId(dto.getSubscriptionId());
         subscription.setName(dto.getName());
 

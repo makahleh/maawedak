@@ -57,11 +57,11 @@ public class Patient {
     private String notes;
 
     // Subscription details
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Subscription> subscriptions;
 
     // Payment details
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Payment> payments;
 
     // sessions history

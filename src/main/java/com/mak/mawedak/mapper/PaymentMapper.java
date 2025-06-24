@@ -27,21 +27,22 @@ public class PaymentMapper {
         return dto;
     }
 
-    public static Payment toEntity(PaymentDTO dto, Patient patient, Long subscriptionId) {
+    public static Payment toEntity(PaymentDTO dto, Patient patient, Payment existingPayment, Long subscriptionId) {
         if (dto == null) {
             return null;
         }
-        Payment payment = new Payment();
+
+        Payment payment = existingPayment != null ? existingPayment : new Payment();
         payment.setPaymentId(dto.getPaymentId());
 
         if (patient != null) {
             payment.setPatient(patient);
         }
 
+        // Prefer dto activeSubscriptionId, else subscriptionId param
         if (dto.getActiveSubscriptionId() != null) {
             payment.setSubscription(new Subscription(dto.getActiveSubscriptionId()));
-        }
-        if (subscriptionId != null) {
+        } else if (subscriptionId != null) {
             payment.setSubscription(new Subscription(subscriptionId));
         }
         payment.setAmount(dto.getAmount());
@@ -49,7 +50,7 @@ public class PaymentMapper {
             payment.setPaymentMethod(new PaymentMethod(dto.getPaymentMethodId()));
         }
         payment.setNotes(dto.getNotes());
-        payment.setCreatedDate(dto.getCreatedDate());
+
         return payment;
     }
 }
