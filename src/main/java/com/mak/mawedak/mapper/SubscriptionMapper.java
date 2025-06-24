@@ -49,7 +49,7 @@ public class SubscriptionMapper {
                 dto.setBalance(totalPayments - (numberOfUsedSessions * dto.getSessionPrice()));
             } else if (methodId == 2L) {
                 double insuranceSessionPrice = subscription.getInsurance() != null ? subscription.getInsurance().getSessionPrice() : 0.0;
-                dto.setBalance(totalPayments - (numberOfUsedSessions * dto.getCoveragePercentage() * insuranceSessionPrice));
+                dto.setBalance(totalPayments - (numberOfUsedSessions * (dto.getCoveragePercentage() / 100) * insuranceSessionPrice));
             } else if (methodId == 3L) {
                 dto.setBalance(totalPayments);
             }
