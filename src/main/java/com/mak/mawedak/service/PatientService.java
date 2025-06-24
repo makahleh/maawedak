@@ -46,7 +46,7 @@ public class PatientService {
         Patient patient = PatientMapper.toEntity(patientDto, existingPatient);
         patient.setCustomer(new Customer(customerId));
         patient = patientRepository.save(patient);
-        return PatientMapper.toDTO(patient);
+        return PatientMapper.toDTO(patient, false);
     }
 
     // Get Page of patients by customer ID
