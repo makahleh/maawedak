@@ -1,16 +1,27 @@
 package com.mak.mawedak.service;
 
+import com.mak.mawedak.dto.InvoiceDTO;
+import com.mak.mawedak.dto.InvoiceFilterDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.entity.Patient;
+import com.mak.mawedak.entity.Payment;
+import com.mak.mawedak.mapper.InvoiceMapper;
 import com.mak.mawedak.model.Invoice;
+import com.mak.mawedak.repository.PaymentRepository;
+import com.mak.mawedak.service.specification.PaymentSpecification;
 import com.mak.mawedak.utils.UblXmlBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,8 +29,27 @@ public class InvoiceService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Autowired
+    private PaymentRepository paymentRepository;
+
     @Value("jofawtara.url")
     private String jofawtaraURL;
+
+    public Page<InvoiceDTO> getInvoices(InvoiceFilterDTO filter, Pageable pageable) {
+        PaymentSpecification paymentSpecification = new PaymentSpecification();
+        Specification<Payment> spec = paymentSpecification.buildSpecification(filter);
+        return paymentRepository.findAll(spec, pageable)
+                .map(InvoiceMapper::toDTO);
+    }
+
+    public void exportToFawtara(InvoiceFilterDTO filter) {
+//        Specification<Payment> spec = buildSpecification(filter);
+//        List<InvoiceDTO> data = paymentRepository.findAll(spec).stream()
+//                .map(this::mapToDTO)
+//                .toList();
+//        fawtaraClient.export(data);
+    }
+
 
     public void sendInvoice(Patient patient, Customer customer) {
     }
