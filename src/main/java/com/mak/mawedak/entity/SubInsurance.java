@@ -13,7 +13,7 @@ public class SubInsurance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long subInsuranceId;
 
     @Column(nullable = false)
     private String name;
@@ -21,4 +21,8 @@ public class SubInsurance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "insurance_id", nullable = false)
     private Insurance insurance;
+
+    public SubInsurance(Long id) {
+        this.subInsuranceId = id;
+    }
 }

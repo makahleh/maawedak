@@ -1,6 +1,7 @@
 package com.mak.mawedak.mapper;
 
 import com.mak.mawedak.dto.InsuranceDTO;
+import com.mak.mawedak.dto.SubInsuranceDTO;
 import com.mak.mawedak.entity.Insurance;
 import com.mak.mawedak.entity.SubInsurance;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,12 @@ public class InsuranceMapper {
         }
 
         var subInsurancesDTO = insurance.getSubInsurances() != null
-                ? IdNameMapper.toDtoList(insurance.getSubInsurances(), SubInsurance::getId, SubInsurance::getName)
+                ? insurance.getSubInsurances().stream()
+                .map(subInsurance -> new SubInsuranceDTO(
+                        subInsurance.getSubInsuranceId(),
+                        subInsurance.getName()
+                ))
+                .collect(java.util.stream.Collectors.toList())
                 : null;
 
         return new InsuranceDTO(
