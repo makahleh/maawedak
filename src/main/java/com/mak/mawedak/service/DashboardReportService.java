@@ -136,7 +136,7 @@ public class DashboardReportService {
     List<ChartDataDTO> mapToChartData(List<ValuePercentageByIdDTO> data) {
         return data.stream()
                 .map(d -> {
-                    String label = d.id().toString();
+                    String label = d.id() != null ? d.id().toString() : null;
                     String yValue = d.value().intValue() + " (" + d.percentage() + "%)";
                     return new ChartDataDTO(label, yValue);
                 })
