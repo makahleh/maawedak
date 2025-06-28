@@ -15,6 +15,8 @@ public class SubscriptionDTO {
     private Long subscriptionMethodId;
     private Long insuranceId;
     private String insuranceName;
+    private Long subInsuranceId;
+    private String subInsuranceName;
     private int numberOfTotalSessions;
     private double sessionPrice;
     private double packagePrice;
@@ -24,5 +26,7 @@ public class SubscriptionDTO {
 
     // runtime fields
     private int numberOfUsedSessions;
+    private double totalPayedAmount;
+    private double totalDueAmount;
     private double balance;
 }

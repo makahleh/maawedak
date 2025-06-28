@@ -42,6 +42,10 @@ public class Subscription {
     @JoinColumn(name = "insurance_id")
     private Insurance insurance;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_insurance_id")
+    private SubInsurance subInsurance;
+
     private int numberOfTotalSessions;
 
     private double sessionPrice;

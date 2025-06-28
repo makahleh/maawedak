@@ -18,8 +18,8 @@ public class SubscriptionMapper {
             dto.setInsuranceId(subscription.getInsurance().getInsuranceId());
             dto.setInsuranceName(subscription.getInsurance().getName());
         }
-        dto.setInsuranceId(
-                subscription.getInsurance() != null ? subscription.getInsurance().getInsuranceId() : null
+        dto.setSubInsuranceId(
+                subscription.getSubInsurance() != null ? subscription.getSubInsurance().getSubInsuranceId() : null
         );
         dto.setNumberOfTotalSessions(subscription.getNumberOfTotalSessions());
         dto.setSessionPrice(subscription.getSessionPrice());
@@ -27,6 +27,7 @@ public class SubscriptionMapper {
         dto.setCoveragePercentage(subscription.getCoveragePercentage());
         dto.setExpiryDate(subscription.getExpiryDate());
         dto.setCreatedDate(subscription.getCreatedDate());
+
         // runtime fields
         var numberOfUsedSessions = subscription.getSessions() == null ? 0 :
                 (int) subscription.getSessions().stream()
@@ -35,6 +36,8 @@ public class SubscriptionMapper {
         dto.setNumberOfUsedSessions(numberOfUsedSessions);
 
         dto.setBalance(0.0);
+        dto.setTotalPayedAmount(0.0);
+        dto.setTotalDueAmount(0.0);
         if (subscription.getPayments() == null) {
             return dto;
         }
@@ -42,18 +45,21 @@ public class SubscriptionMapper {
                 .mapToDouble(Payment::getAmount)
                 .sum();
 
+        dto.setTotalPayedAmount(totalPayments);
         Long methodId = dto.getSubscriptionMethodId();
 
         if (methodId != null) {
             if (methodId == 1L) {
-                dto.setBalance(totalPayments - (numberOfUsedSessions * dto.getSessionPrice()));
+                dto.setTotalDueAmount(numberOfUsedSessions * dto.getSessionPrice());
             } else if (methodId == 2L) {
                 double insuranceSessionPrice = subscription.getInsurance() != null ? subscription.getInsurance().getSessionPrice() : 0.0;
-                dto.setBalance(totalPayments - (numberOfUsedSessions * (dto.getCoveragePercentage() / 100) * insuranceSessionPrice));
+                dto.setTotalDueAmount(numberOfUsedSessions * (dto.getCoveragePercentage() / 100) * insuranceSessionPrice);
             } else if (methodId == 3L) {
-                dto.setBalance(totalPayments);
+                dto.setTotalDueAmount(subscription.getPackagePrice());
             }
         }
+
+        dto.setBalance(dto.getTotalPayedAmount() - dto.getTotalDueAmount());
 
         return dto;
     }
@@ -75,6 +81,10 @@ public class SubscriptionMapper {
 
         if (dto.getInsuranceId() != null) {
             subscription.setInsurance(new Insurance(dto.getInsuranceId()));
+        }
+
+        if (dto.getSubInsuranceId() != null) {
+            subscription.setSubInsurance(new SubInsurance(dto.getSubInsuranceId()));
         }
 
         subscription.setNumberOfTotalSessions(dto.getNumberOfTotalSessions());
