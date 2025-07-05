@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InvoiceDTO {
+    private Long paymentId;
     private String patientName;
     private Long subscriptionMethodId;
     private double amount;
     private Long paymentMethodId;
     private LocalDateTime createdDate;
+    private Boolean wasExportedToFawtara;
     private String notes;
 }

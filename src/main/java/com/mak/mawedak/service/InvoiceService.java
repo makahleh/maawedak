@@ -1,5 +1,6 @@
 package com.mak.mawedak.service;
 
+import com.mak.mawedak.dto.ExportToFawtaraRequestDTO;
 import com.mak.mawedak.dto.InvoiceDTO;
 import com.mak.mawedak.dto.InvoiceFilterDTO;
 import com.mak.mawedak.entity.Customer;
@@ -35,16 +36,18 @@ public class InvoiceService {
     @Value("jofawtara.url")
     private String jofawtaraURL;
 
-    public Page<InvoiceDTO> getInvoices(InvoiceFilterDTO filter, Pageable pageable) {
+    public Page<InvoiceDTO> getInvoices(InvoiceFilterDTO filter, Pageable pageable, Long customerId) {
         PaymentSpecification paymentSpecification = new PaymentSpecification();
-        Specification<Payment> spec = paymentSpecification.buildSpecification(filter);
+        Specification<Payment> spec = paymentSpecification.buildSpecification(filter, customerId);
         return paymentRepository.findAll(spec, pageable)
                 .map(InvoiceMapper::toDTO);
     }
 
-    public void exportToFawtara(InvoiceFilterDTO filter) {
+    public void exportToFawtara(ExportToFawtaraRequestDTO fawtaraRequestDTO, Long customerId) {
+        List<Payment> payments = paymentRepository.findAllByPaymentIdIn(fawtaraRequestDTO.paymentIds());
+        paymentRepository.updateExportedToFawtara(fawtaraRequestDTO.paymentIds());
 //        Specification<Payment> spec = buildSpecification(filter);
-//        List<InvoiceDTO> data = paymentRepository.findAll(spec).stream()
+//        List<InvoiceDTO> data = payments.stream()
 //                .map(this::mapToDTO)
 //                .toList();
 //        fawtaraClient.export(data);

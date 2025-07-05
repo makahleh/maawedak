@@ -19,4 +19,5 @@ public class InvoiceFilterDTO {
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
     private String notes;
+    private Boolean wasExportedToFawtara;
 }

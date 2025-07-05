@@ -1,8 +1,10 @@
 package com.mak.mawedak.controller;
 
+import com.mak.mawedak.dto.ExportToFawtaraRequestDTO;
 import com.mak.mawedak.dto.InvoiceDTO;
 import com.mak.mawedak.dto.InvoiceFilterDTO;
 import com.mak.mawedak.service.InvoiceService;
+import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,13 +27,13 @@ public class InvoiceController {
             @PageableDefault Pageable pageable,
             @ModelAttribute InvoiceFilterDTO filter
     ) {
-        Page<InvoiceDTO> result = invoiceService.getInvoices(filter, pageable);
+        Page<InvoiceDTO> result = invoiceService.getInvoices(filter, pageable, ContextHolderHelper.getCustomerId());
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/export-to-fawtara")
-    public ResponseEntity<Void> exportToFawtara(@ModelAttribute InvoiceFilterDTO filter) {
-        invoiceService.exportToFawtara(filter);
+    @PostMapping("/export-to-fawtara")
+    public ResponseEntity<Void> exportToFawtara(@RequestBody ExportToFawtaraRequestDTO fawtaraDTO) {
+        invoiceService.exportToFawtara(fawtaraDTO, ContextHolderHelper.getCustomerId());
         return ResponseEntity.ok().build();
     }
 }

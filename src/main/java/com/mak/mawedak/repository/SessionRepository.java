@@ -73,7 +73,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     );
 
     @Query("""
-                SELECT COUNT(s)
+                SELECT COALESCE(SUM(s.subscription.insurance.sessionPrice), 0)
                 FROM Session s
                 WHERE s.customer.customerId = :customerId
                   AND s.sessionStatus.sessionStatusId = 2

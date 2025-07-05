@@ -37,6 +37,9 @@ public class Payment {
     @JoinColumn(name = "payment_method_id")
     private PaymentMethod paymentMethod;
 
+    @Column
+    private Boolean wasExportedToFawtara = false;
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdDate;
