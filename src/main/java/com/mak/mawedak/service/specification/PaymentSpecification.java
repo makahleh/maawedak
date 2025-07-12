@@ -13,6 +13,7 @@ public class PaymentSpecification {
                 .and(hasPatientName(filter.getPatientName()))
                 .and(hasSubscriptionMethod(filter.getSubscriptionMethodId()))
                 .and(hasInsurance(filter.getInsuranceId()))
+                .and(hasSubInsurance(filter.getSubInsuranceId()))
                 .and(hasMinAmount(filter.getMinAmount()))
                 .and(hasMaxAmount(filter.getMaxAmount()))
                 .and(hasPaymentMethodId(filter.getPaymentMethodId()))
@@ -40,6 +41,11 @@ public class PaymentSpecification {
     private Specification<Payment> hasInsurance(Long insuranceId) {
         return (root, query, cb) -> insuranceId == null ? null :
                 cb.equal(root.get("subscription").get("insurance").get("insuranceId"), insuranceId);
+    }
+
+    private Specification<Payment> hasSubInsurance(Long subInsuranceId) {
+        return (root, query, cb) -> subInsuranceId == null ? null :
+                cb.equal(root.get("subscription").get("subInsurance").get("subInsuranceId"), subInsuranceId);
     }
 
     private Specification<Payment> hasMinAmount(Double minAmount) {

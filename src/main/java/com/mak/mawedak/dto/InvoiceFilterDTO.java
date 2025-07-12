@@ -13,6 +13,7 @@ public class InvoiceFilterDTO {
     private String patientName;
     private Long subscriptionMethodId;
     private Long insuranceId;
+    private Long subInsuranceId;
     private Double minAmount;
     private Double maxAmount;
     private Long paymentMethodId;

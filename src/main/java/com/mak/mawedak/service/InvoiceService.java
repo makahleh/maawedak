@@ -45,12 +45,9 @@ public class InvoiceService {
 
     public void exportToFawtara(ExportToFawtaraRequestDTO fawtaraRequestDTO, Long customerId) {
         List<Payment> payments = paymentRepository.findAllByPaymentIdIn(fawtaraRequestDTO.paymentIds());
+
+
         paymentRepository.updateExportedToFawtara(fawtaraRequestDTO.paymentIds());
-//        Specification<Payment> spec = buildSpecification(filter);
-//        List<InvoiceDTO> data = payments.stream()
-//                .map(this::mapToDTO)
-//                .toList();
-//        fawtaraClient.export(data);
     }
 
 

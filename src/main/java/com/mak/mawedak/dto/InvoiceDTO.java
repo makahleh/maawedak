@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class InvoiceDTO {
     private Long paymentId;
     private String patientName;
+    private String insuranceName;
+    private String subInsuranceName;
     private Long subscriptionMethodId;
     private double amount;
     private Long paymentMethodId;
