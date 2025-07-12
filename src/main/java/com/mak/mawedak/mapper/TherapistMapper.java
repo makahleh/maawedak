@@ -42,7 +42,7 @@ public class TherapistMapper {
         therapist.setUsername(therapistDto.getUsername());
         therapist.setPassword(therapistDto.getPassword() == null ? therapist.getPassword() : therapistDto.getPassword());
         therapist.setDepartment(new Department(therapistDto.getDepartmentId(), null));
-        therapist.setRoles(new ArrayList<>(List.of(new Role(1L))));
+        therapist.setRoles(new ArrayList<>(List.of(new Role(2L))));
         // Add other fields as necessary
         return therapist;
     }

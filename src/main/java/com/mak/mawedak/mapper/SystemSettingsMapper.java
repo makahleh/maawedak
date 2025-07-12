@@ -53,6 +53,10 @@ public class SystemSettingsMapper {
 
             // map from IdNameDTO to TreatmentMethod entity
             List<TreatmentMethod> treatmentMethods = existingCustomer.getPatientProfileSettings().getTreatmentMethods();
+            if (treatmentMethods == null || treatmentMethods.isEmpty()) {
+                treatmentMethods = new ArrayList<>();
+                existingCustomer.getPatientProfileSettings().setTreatmentMethods(treatmentMethods);
+            }
             treatmentMethods.clear();
             treatmentMethods.addAll(
                     systemSettingsDTO.getPatientProfileSettings().getTreatmentMethods()

@@ -60,6 +60,6 @@ public class AuthService {
         String jwt = jwtTokenProvider.generateToken(authentication, claims);
         // 04 - Return the token to controller
         SystemSettingsDTO systemSettingsDTO = SystemSettingsMapper.mapToSystemSettingsDTO(customer);
-        return new AuthResponseDTO(jwt, systemSettingsDTO);
+        return new AuthResponseDTO(jwt, roles.getFirst(), systemSettingsDTO);
     }
 }
