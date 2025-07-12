@@ -10,7 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InsuranceRepository extends JpaRepository<Insurance, Long> {
-    @Query("SELECT i FROM Insurance i JOIN i.customers c WHERE c.customerId = :customerId")
-    Page<Insurance> findAllByCustomerId(@Param("customerId") Long customerId, Pageable pageable);
-
+    Page<Insurance> findAllByCustomer_CustomerId(Long customerId, Pageable pageable);
 }

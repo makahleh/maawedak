@@ -2,8 +2,11 @@ package com.mak.mawedak.service;
 
 import com.mak.mawedak.dto.AuthResponseDTO;
 import com.mak.mawedak.dto.LoginDTO;
+import com.mak.mawedak.dto.SystemSettingsDTO;
+import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.entity.Role;
 import com.mak.mawedak.entity.Therapist;
+import com.mak.mawedak.mapper.SystemSettingsMapper;
 import com.mak.mawedak.provider.JwtTokenProvider;
 import com.mak.mawedak.repository.TherapistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,12 +52,14 @@ public class AuthService {
         List<String> roles = user.getRoles().stream()
                 .map(Role::getName)
                 .toList();
+        Customer customer = user.getCustomer();
         Map<String, Object> claims = new HashMap<>();
-        claims.put("customerId", user.getCustomer().getCustomerId());
+        claims.put("customerId", customer.getCustomerId());
         claims.put("roles", roles);
 
         String jwt = jwtTokenProvider.generateToken(authentication, claims);
         // 04 - Return the token to controller
-        return new AuthResponseDTO(jwt);
+        SystemSettingsDTO systemSettingsDTO = SystemSettingsMapper.mapToSystemSettingsDTO(customer);
+        return new AuthResponseDTO(jwt, systemSettingsDTO);
     }
 }

@@ -18,14 +18,8 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long insuranceId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "insurance_customer",
-            joinColumns = @JoinColumn(name = "insurance_id"),
-            inverseJoinColumns = @JoinColumn(name = "customer_id")
-    )
-    private List<Customer> customers;
-
+    @ManyToOne
+    private Customer customer;
 
     @Column(nullable = false, unique = true)
     private String name;

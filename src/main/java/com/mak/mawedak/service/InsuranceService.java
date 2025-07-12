@@ -23,7 +23,7 @@ public class InsuranceService {
 
     public Page<InsuranceDTO> getInsurances(Long customerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Insurance> insurancesPage = insuranceRepository.findAllByCustomerId(customerId, pageable);
+        Page<Insurance> insurancesPage = insuranceRepository.findAllByCustomer_CustomerId(customerId, pageable);
 
         return insurancesPage.map(insuranceMapper::toDto);
     }

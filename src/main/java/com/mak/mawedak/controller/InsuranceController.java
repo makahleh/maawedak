@@ -21,7 +21,7 @@ public class InsuranceController {
     private InsuranceService insuranceService;
 
     @GetMapping("/list")
-    public ResponseEntity<Page<InsuranceDTO>> getPatients(
+    public ResponseEntity<Page<InsuranceDTO>> getInsurances(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "100") int size) {
         Page<InsuranceDTO> patientsPage = insuranceService.getInsurances(
