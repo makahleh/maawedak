@@ -53,17 +53,25 @@ public class SystemSettingsMapper {
 
             // map from IdNameDTO to TreatmentMethod entity
             List<TreatmentMethod> treatmentMethods = existingCustomer.getPatientProfileSettings().getTreatmentMethods();
-            if (treatmentMethods == null || treatmentMethods.isEmpty()) {
+
+            if (treatmentMethods == null) {
                 treatmentMethods = new ArrayList<>();
                 existingCustomer.getPatientProfileSettings().setTreatmentMethods(treatmentMethods);
+            } else {
+                treatmentMethods.clear(); // triggers orphanRemoval on removed children
             }
-            treatmentMethods.clear();
+
             treatmentMethods.addAll(
                     systemSettingsDTO.getPatientProfileSettings().getTreatmentMethods()
                             .stream()
-                            .map(idNameDTO -> new TreatmentMethod(idNameDTO.getId(), idNameDTO.getName(), existingCustomer.getPatientProfileSettings()))
+                            .map(idNameDTO -> new TreatmentMethod(
+                                    idNameDTO.getId(),
+                                    idNameDTO.getName(),
+                                    existingCustomer.getPatientProfileSettings())
+                            )
                             .collect(Collectors.toList())
             );
+
         }
 
         if (systemSettingsDTO.getCalendarSettings() != null) {
