@@ -1,5 +1,7 @@
 package com.mak.mawedak.controller;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleLoginError(AuthenticationException ex) {
         String errorMessage = "Authentication failed: " + ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED); // 401
+    }
+
+    // Handle expired tokens
+    @ExceptionHandler({ExpiredJwtException.class})
+    public ResponseEntity<String> handleExpiredJwtException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
     }
 
     // Handle Entity Not Found (e.g., when a resource is not found in DB)

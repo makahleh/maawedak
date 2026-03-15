@@ -14,7 +14,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("http://localhost:8080") // Allow origins with patterns
+                        .allowedOriginPatterns(
+                                "https://clinicsdr.com",
+                                "http://drclinic-env-final.eba-yhcfncp9.us-east-1.elasticbeanstalk.com",
+                                "http://localhost:8080"
+                        ) // Allow origins with patterns
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true); // Allow credentials with patterns
