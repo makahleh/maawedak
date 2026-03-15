@@ -25,6 +25,9 @@ public class Patient {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @Column(name = "file_number")
+    private Long fileNumber;
+
     @Column(nullable = false, length = 100)
     private String name;
 

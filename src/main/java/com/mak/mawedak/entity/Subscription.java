@@ -48,6 +48,8 @@ public class Subscription {
 
     private int numberOfTotalSessions;
 
+    private int numberOfOldSessions;
+
     private double sessionPrice;
 
     private double packagePrice;

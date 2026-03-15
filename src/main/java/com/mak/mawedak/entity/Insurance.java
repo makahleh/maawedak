@@ -21,7 +21,7 @@ public class Insurance {
     @ManyToOne
     private Customer customer;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "tax_number")

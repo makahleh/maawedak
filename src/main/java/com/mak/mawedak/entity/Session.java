@@ -21,7 +21,7 @@ public class Session {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
@@ -50,4 +50,3 @@ public class Session {
     @JoinColumn(name = "session_status_id")
     private SessionStatus sessionStatus;
 }
-

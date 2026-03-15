@@ -1,9 +1,6 @@
 package com.mak.mawedak.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +12,10 @@ import lombok.NoArgsConstructor;
 public class TreatmentMethod {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long treatmentMethodId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @ManyToOne

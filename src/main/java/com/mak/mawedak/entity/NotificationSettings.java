@@ -16,13 +16,13 @@ public class NotificationSettings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long notificationSettingsId;
 
-    @Column
+    @Column(length = 2000)
     private String whatsAppReminderMessageTemplate;
 
-    @Column
+    @Column(length = 2000)
     private String whatsAppAfterSessionFeedbackTemplate;
 
-    @Column
+    @Column(length = 2000)
     private String whatsAppSessionNotAttendedTemplate;
 
     public NotificationSettings(Long id) {
