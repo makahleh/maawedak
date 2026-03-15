@@ -32,7 +32,6 @@ public class SecurityConfig {
     @Autowired
     private TherapistService therapistService;
 
-
     // Configures the security filter chain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -40,16 +39,32 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Apply CORS settings
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // Allow public access to login
-//                        .requestMatchers("/api/therapists/**").hasRole("ADMIN") // Restrict to ADMIN role
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/",
+                                "/index.html",
+                                "/*.js",
+                                "/*.json",
+                                "/*.png",
+                                "/assets/**",
+                                "/canvaskit/**",
+                                "/icons/**",
+                                "/{path:^(?!api$).*$}/**",
+                                "/{path:^(?!api$).*$}")
+                        .permitAll() // Allow public access to login, swagger, and Flutter static assets
+                        // .requestMatchers("/api/therapists/**").hasRole("ADMIN") // Restrict to ADMIN
+                        // role
                         .anyRequest().authenticated() // Require authentication for all other endpoints
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless
+                // session
+                // management
                 .authenticationProvider(authenticationProvider()) // Register authentication provider
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter
                 .build();
     }
-
 
     // Creates a DaoAuthenticationProvider to handle user authentication
     @Bean
@@ -60,13 +75,12 @@ public class SecurityConfig {
         return authenticationProvider;
     }
 
-
-    // Defines a PasswordEncoder bean that uses bcrypt hashing by default for password encoding
+    // Defines a PasswordEncoder bean that uses bcrypt hashing by default for
+    // password encoding
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 
     // Defines an AuthenticationManager bean to manage authentication processes
     @Bean
