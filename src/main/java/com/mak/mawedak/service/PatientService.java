@@ -8,11 +8,9 @@ import com.mak.mawedak.mapper.PatientMapper;
 import com.mak.mawedak.repository.PatientRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,10 +19,6 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepository;
-
-    @Autowired
-    @Lazy // used to break cyclic dependency with session service, when we need PatientService in session service
-    private SessionService sessionService;
 
     // Create patient
     public PatientDTO createPatient(Long customerId, PatientDTO patientDto) throws RuntimeException {
@@ -38,7 +32,7 @@ public class PatientService {
     public PatientDTO updatePatient(Long customerId, PatientDTO patientDto) throws RuntimeException {
         Patient patient = patientRepository
                 .findByCustomer_CustomerIdAndPatientIdAndIsActive(customerId, patientDto.getPatientId(), true)
-                        .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
         return savePatient(customerId, patientDto, patient);
     }
 
@@ -52,8 +46,8 @@ public class PatientService {
     // Get Page of patients by customer ID
     public Page<PatientDTO> getPatients(Long customerId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdDate")));
-        Page<Patient> patientsPage =
-                patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true, pageable);
+        Page<Patient> patientsPage = patientRepository.findAllByCustomer_CustomerIdAndIsActive(customerId, true,
+                pageable);
 
         return patientsPage.map(p -> PatientMapper.toDTO(p, false));
     }
@@ -87,4 +81,3 @@ public class PatientService {
         return patients.map(p -> PatientMapper.toDTO(p, false));
     }
 }
-

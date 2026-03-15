@@ -6,16 +6,15 @@ import java.time.LocalDateTime;
 
 public class SessionMapper {
 
-    public static SessionDTO toDTO(Session session) {
+    public static SessionDTO toDTO(Session session, boolean forCalendar) {
         if (session == null) {
             return null;
         }
         SessionDTO dto = new SessionDTO();
         dto.setSessionId(session.getSessionId());
 
-        // Map patient and therapist as IdNameDTO
-        if (session.getPatient() != null) {
-            dto.setPatient(new IdNameDTO(session.getPatient().getPatientId(), session.getPatient().getName()));
+        if (session.getPatient() != null && forCalendar) {
+            dto.setPatient(PatientMapper.toDTO(session.getPatient(), false));
         }
         if (session.getTherapist() != null) {
             dto.setTherapist(new IdNameDTO(session.getTherapist().getTherapistId(), session.getTherapist().getName()));
@@ -46,8 +45,8 @@ public class SessionMapper {
 
         // Set patient and therapist by ID only
         Patient patient = null;
-        if (dto.getPatient() != null && dto.getPatient().getId() != null) {
-            patient = new Patient(dto.getPatient().getId());
+        if (dto.getPatient() != null && dto.getPatient().getPatientId() != null) {
+            patient = new Patient(dto.getPatient().getPatientId());
             session.setPatient(patient);
         }
         if (dto.getTherapist() != null && dto.getTherapist().getId() != null) {
@@ -57,7 +56,8 @@ public class SessionMapper {
             var subscriptionId = dto.getActiveSubscription().getSubscriptionId();
             session.setSubscription(new Subscription(subscriptionId));
 
-            // just to avoid setting subscriptionId again in Payment object when creating a new session
+            // just to avoid setting subscriptionId again in Payment object when creating a
+            // new session
             if (dto.getPayment() != null) {
                 session.setPayment(PaymentMapper.toEntity(dto.getPayment(), patient, null, subscriptionId));
             }
