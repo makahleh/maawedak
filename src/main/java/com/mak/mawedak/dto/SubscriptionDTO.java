@@ -18,6 +18,7 @@ public class SubscriptionDTO {
     private Long subInsuranceId;
     private String subInsuranceName;
     private int numberOfTotalSessions;
+    private int numberOfOldSessions;
     private double sessionPrice;
     private double packagePrice;
     private double coveragePercentage;

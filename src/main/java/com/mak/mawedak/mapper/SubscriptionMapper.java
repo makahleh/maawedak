@@ -22,6 +22,7 @@ public class SubscriptionMapper {
                 subscription.getSubInsurance() != null ? subscription.getSubInsurance().getSubInsuranceId() : null
         );
         dto.setNumberOfTotalSessions(subscription.getNumberOfTotalSessions());
+        dto.setNumberOfOldSessions(subscription.getNumberOfOldSessions());
         dto.setSessionPrice(subscription.getSessionPrice());
         dto.setPackagePrice(subscription.getPackagePrice());
         dto.setCoveragePercentage(subscription.getCoveragePercentage());
@@ -33,7 +34,7 @@ public class SubscriptionMapper {
                 (int) subscription.getSessions().stream()
                         .filter(s -> s.getSessionStatus() != null && s.getSessionStatus().getSessionStatusId() == 2)
                         .count();
-        dto.setNumberOfUsedSessions(numberOfUsedSessions);
+        dto.setNumberOfUsedSessions(numberOfUsedSessions + subscription.getNumberOfOldSessions());
 
         dto.setBalance(0.0);
         dto.setTotalPayedAmount(0.0);
@@ -88,6 +89,7 @@ public class SubscriptionMapper {
         }
 
         subscription.setNumberOfTotalSessions(dto.getNumberOfTotalSessions());
+        subscription.setNumberOfOldSessions(dto.getNumberOfOldSessions());
         subscription.setSessionPrice(dto.getSessionPrice());
         subscription.setPackagePrice(dto.getPackagePrice());
         subscription.setCoveragePercentage(dto.getCoveragePercentage());

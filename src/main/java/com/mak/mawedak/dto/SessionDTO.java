@@ -11,7 +11,7 @@ public class SessionDTO {
 
     private Long sessionId;
 
-    private IdNameDTO patient;
+    private PatientDTO patient;
 
     private IdNameDTO therapist;
 

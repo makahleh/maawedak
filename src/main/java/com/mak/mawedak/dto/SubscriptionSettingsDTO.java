@@ -13,6 +13,7 @@ public class SubscriptionSettingsDTO {
     private Long subscriptionId;
     private String name;
     private Long subscriptionMethodId;
+    private int numberOfTotalSessions;
     private Long insuranceId;
     private Long subInsuranceId;
     private double sessionPrice;

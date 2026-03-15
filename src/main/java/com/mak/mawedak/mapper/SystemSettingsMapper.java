@@ -44,6 +44,7 @@ public class SystemSettingsMapper {
             if (subscriptionSettingsDTO.getSubInsuranceId() != null) {
                 subscriptionSettings.setSubInsurance(new SubInsurance(subscriptionSettingsDTO.getSubInsuranceId()));
             }
+            subscriptionSettings.setNumberOfTotalSessions(subscriptionSettingsDTO.getNumberOfTotalSessions());
             subscriptionSettings.setSessionPrice(subscriptionSettingsDTO.getSessionPrice());
             subscriptionSettings.setPackagePrice(subscriptionSettingsDTO.getPackagePrice());
             subscriptionSettings.setCoveragePercentage(subscriptionSettingsDTO.getCoveragePercentage());
@@ -120,10 +121,10 @@ public class SystemSettingsMapper {
                     customer.getCustomerPersonalInfo().getCustomerPersonalInfoId(),
                     customer.getCustomerPersonalInfo().getName(),
                     customer.getCustomerPersonalInfo().getNickName(),
-                    customer.getCustomerPersonalInfo().getTaxNumber(),
-                    customer.getCustomerPersonalInfo().getAddress(),
+                    customer.getCustomerPersonalInfo().getEmail(),
                     customer.getCustomerPersonalInfo().getPhoneNumber(),
-                    customer.getCustomerPersonalInfo().getEmail()
+                    customer.getCustomerPersonalInfo().getAddress(),
+                    customer.getCustomerPersonalInfo().getTaxNumber()
             ));
         }
 
@@ -136,6 +137,7 @@ public class SystemSettingsMapper {
                                     customer.getPatientProfileSettings().getDefaultSubscription().getName(),
                                     customer.getPatientProfileSettings().getDefaultSubscription().getSubscriptionMethod() != null ?
                                             customer.getPatientProfileSettings().getDefaultSubscription().getSubscriptionMethod().getSubscriptionMethodId() : null,
+                                    customer.getPatientProfileSettings().getDefaultSubscription().getNumberOfTotalSessions(),
                                     customer.getPatientProfileSettings().getDefaultSubscription().getInsurance() != null ?
                                             customer.getPatientProfileSettings().getDefaultSubscription().getInsurance().getInsuranceId() : null,
                                     customer.getPatientProfileSettings().getDefaultSubscription().getSubInsurance() != null ?

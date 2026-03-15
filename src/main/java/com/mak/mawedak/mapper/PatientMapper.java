@@ -2,10 +2,7 @@ package com.mak.mawedak.mapper;
 
 import com.mak.mawedak.dto.*;
 import com.mak.mawedak.entity.*;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +15,7 @@ public class PatientMapper {
 
         PatientDTO patientDTO = new PatientDTO();
         patientDTO.setPatientId(patient.getPatientId());
+        patientDTO.setFileNumber(patient.getFileNumber());
         patientDTO.setName(patient.getName());
         patientDTO.setAge(patient.getAge());
         patientDTO.setPhoneNumber(patient.getPhoneNumber());
@@ -28,9 +26,7 @@ public class PatientMapper {
             patientDTO.setTherapist(
                     new IdNameDTO(
                             patient.getTherapist().getTherapistId(),
-                            patient.getTherapist().getName()
-                    )
-            );
+                            patient.getTherapist().getName()));
         }
 
         // Department mapping
@@ -41,35 +37,33 @@ public class PatientMapper {
             patientDTO.setTreatmentMethods(
                     patient.getTreatmentMethods().stream()
                             .map(TreatmentMethod::getTreatmentMethodId)
-                            .toList()
-            );
+                            .toList());
         }
 
         patientDTO.setNotes(patient.getNotes());
-        patientDTO.setCreatedDate(patient.getCreatedDate().toString());
+        patientDTO.setCreatedDate(patient.getCreatedDate() != null ? patient.getCreatedDate().toString() : null);
 
         if (patient.getSubscriptions() != null) {
             patientDTO.setSubscriptions(
                     patient.getSubscriptions().stream()
                             .map(SubscriptionMapper::toDTO)
-                            .toList()
-            );
+                            .toList());
         }
 
         if (patient.getPayments() != null && getForProfile) {
             patientDTO.setPayments(
                     patient.getPayments().stream()
                             .map(PaymentMapper::toDTO)
-                            .toList()
-            );
+                            .toList());
         }
 
         if (patient.getSessions() != null && getForProfile) {
             patientDTO.setSessions(
                     patient.getSessions().stream()
-                            .map(SessionMapper::toDTO)
-                            .toList()
-            );
+                            .map(
+                                    session -> SessionMapper.toDTO(session, false)
+                            )
+                            .toList());
         }
 
         return patientDTO;
@@ -100,8 +94,7 @@ public class PatientMapper {
             patient.setTreatmentMethods(
                     patientDto.getTreatmentMethods().stream()
                             .map(TreatmentMethod::new)
-                            .collect(Collectors.toList())
-            );
+                            .collect(Collectors.toList()));
         }
 
         // Update subscriptions without wiping existing ones
@@ -157,4 +150,3 @@ public class PatientMapper {
     }
 
 }
-

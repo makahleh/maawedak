@@ -14,6 +14,8 @@ public class PatientDTO {
 
     private Long patientId;
 
+    private Long fileNumber;
+
     private String name;
 
     private Integer age;
