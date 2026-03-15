@@ -20,6 +20,9 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     // Find all active patients for a specific customer
     Page<Patient> findAllByCustomer_CustomerIdAndIsActive(Long customerId, boolean isActive, Pageable pageable);
 
+    @Query("SELECT MAX(p.fileNumber) FROM Patient p WHERE p.customer.id = :customerId")
+    Long findMaxFileNumberByCustomerId(@Param("customerId") Long customerId);
+
     // Find a specific active patient by ID and customer ID
     Optional<Patient> findByCustomer_CustomerIdAndPatientIdAndIsActive(Long customerId, Long id, boolean isActive);
 
