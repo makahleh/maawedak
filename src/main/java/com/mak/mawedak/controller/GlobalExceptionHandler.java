@@ -1,7 +1,6 @@
 package com.mak.mawedak.controller;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.security.core.AuthenticationException;
 
-import java.security.SignatureException;
+import io.jsonwebtoken.security.SignatureException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,8 +26,15 @@ public class GlobalExceptionHandler {
     }
 
     // Handle Login/Authentication Errors
-    @ExceptionHandler({AuthenticationException.class, SignatureException.class})
-    public ResponseEntity<Object> handleLoginError(AuthenticationException ex) {
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Object> handleAuthenticationError(AuthenticationException ex) {
+        String errorMessage = "Authentication failed: " + ex.getMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED); // 401
+    }
+
+    // Handle jwt parse Errors
+    @ExceptionHandler(SignatureException.class)
+    public ResponseEntity<Object> handleJwtParseError(SignatureException ex) {
         String errorMessage = "Authentication failed: " + ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED); // 401
     }

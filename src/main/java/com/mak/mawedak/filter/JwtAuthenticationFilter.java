@@ -44,24 +44,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = getTokenFromRequest(request);
 
         // Validate Token
-        if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
-            // get username from token
-            Claims claims = jwtTokenProvider.getClaims(token);
+        try {
+            if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
+                // get username from token
+                Claims claims = jwtTokenProvider.getClaims(token);
 
-            UserDetails userDetails = getUserService().loadUserByUsername(claims.getSubject());
+                UserDetails userDetails = getUserService().loadUserByUsername(claims.getSubject());
 
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    claims,
-                    null,
-                    userDetails.getAuthorities()
-            );
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                        claims,
+                        null,
+                        userDetails.getAuthorities()
+                );
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (io.jsonwebtoken.ExpiredJwtException | io.jsonwebtoken.security.SignatureException ex) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid or expired token");
+        } catch (io.jsonwebtoken.JwtException ex) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Invalid JWT token");
         }
-
-        filterChain.doFilter(request, response);
     }
 
     // Extract the token
