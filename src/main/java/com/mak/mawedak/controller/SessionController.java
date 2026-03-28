@@ -1,6 +1,7 @@
 package com.mak.mawedak.controller;
 
 import com.mak.mawedak.dto.SessionDTO;
+import com.mak.mawedak.dto.SessionReviewDTO;
 import com.mak.mawedak.service.SessionService;
 import com.mak.mawedak.utils.ContextHolderHelper;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -57,6 +58,12 @@ public class SessionController {
     public ResponseEntity<Void> deleteSession(@PathVariable Long sessionId) {
         sessionService.deleteSession(sessionId);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/{sessionId}/review")
+    public ResponseEntity<SessionDTO> reviewSession(@PathVariable Long sessionId, @RequestBody SessionReviewDTO reviewDTO) {
+        SessionDTO updatedSession = sessionService.reviewSession(sessionId, reviewDTO);
+        return ResponseEntity.ok(updatedSession);
     }
 }
 

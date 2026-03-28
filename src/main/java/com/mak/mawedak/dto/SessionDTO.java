@@ -26,4 +26,6 @@ public class SessionDTO {
     private String notes;
 
     private Long statusId;
+
+    private SessionReviewDTO sessionReview;
 }

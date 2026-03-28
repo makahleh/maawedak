@@ -49,4 +49,7 @@ public class Session {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_status_id")
     private SessionStatus sessionStatus;
+
+    @OneToOne(mappedBy = "session", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private SessionReview sessionReview;
 }

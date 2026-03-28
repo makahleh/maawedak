@@ -4,11 +4,12 @@ import com.mak.mawedak.dto.PatientDTO;
 import com.mak.mawedak.dto.SessionDTO;
 import com.mak.mawedak.entity.Customer;
 import com.mak.mawedak.entity.Session;
-import com.mak.mawedak.entity.Subscription;
-import com.mak.mawedak.mapper.PaymentMapper;
 import com.mak.mawedak.mapper.SessionMapper;
-import com.mak.mawedak.repository.PaymentRepository;
+import com.mak.mawedak.mapper.SessionReviewMapper;
 import com.mak.mawedak.repository.SessionRepository;
+import com.mak.mawedak.repository.SessionReviewRepository;
+import com.mak.mawedak.entity.SessionReview;
+import com.mak.mawedak.dto.SessionReviewDTO;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,10 @@ public class SessionService {
     private SessionRepository sessionRepository;
 
     @Autowired
-    private PaymentRepository paymentRepository;
+    private PatientService patientService;
 
     @Autowired
-    private PatientService patientService;
+    private SessionReviewRepository sessionReviewRepository;
 
     // Create session
     public SessionDTO createSession(Long customerId, SessionDTO sessionDto) throws RuntimeException {
@@ -85,8 +86,7 @@ public class SessionService {
                 departmentId);
 
         return sessions.stream().map(
-                session -> SessionMapper.toDTO(session, true)
-        ).toList();
+                session -> SessionMapper.toDTO(session, true)).toList();
     }
 
     // Delete session by ID
@@ -97,4 +97,22 @@ public class SessionService {
         sessionRepository.deleteById(sessionId);
     }
 
+    public SessionDTO reviewSession(Long sessionId, SessionReviewDTO reviewDTO) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        if (reviewDTO.getReviewId() == null) {
+            if (session.getSessionReview() != null) {
+                throw new RuntimeException(
+                        "A review already exists for this session. Please provide the review ID to update it.");
+            }
+        }
+
+        SessionReview review = SessionReviewMapper.toEntity(reviewDTO);
+        review.setSession(session);
+
+        review = sessionReviewRepository.save(review);
+        session.setSessionReview(review); // Make sure it's returned
+        return SessionMapper.toDTO(session, true);
+    }
 }

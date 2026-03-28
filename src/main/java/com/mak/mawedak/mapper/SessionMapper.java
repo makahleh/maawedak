@@ -33,6 +33,10 @@ public class SessionMapper {
         dto.setNotes(session.getNotes());
         dto.setStatusId(session.getSessionStatus() != null ? session.getSessionStatus().getSessionStatusId() : null);
 
+        if (session.getSessionReview() != null) {
+            dto.setSessionReview(SessionReviewMapper.toDTO(session.getSessionReview()));
+        }
+
         return dto;
     }
 
