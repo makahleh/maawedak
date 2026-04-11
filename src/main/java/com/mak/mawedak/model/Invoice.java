@@ -14,12 +14,15 @@ import java.util.UUID;
 public class Invoice {
     private String customerTaxId;
     private String customerName;
-    private String customerIncomeSourceSequence;
+    private String customerIncomeSourceSequenceNumber;
     private String clientTaxId;
     private String clientName;
-    private String invoiceNumber;
-    private UUID invoiceId;
-    private LocalDate issueDate;
+    private String clientPhoneNumber;
+    private String invoiceNumber; // "EIN" + customer.incomeTaxInvoiceSequence.format to be 5 digits, e.g.
+    // EIN00001
+    private UUID invoiceUUID; // a unique identifier for the invoice, can be generated using UUID.randomUUID()
+    private int invoiceIncrementalId; // should be customer.incomeTaxInvoiceSequence
+    private LocalDate issueDate; // current date (formatted yyyy-mm-dd)
     private double invoiceTotal;
-    private List<InvoiceItem> invoiceItem;
+    private List<InvoiceItem> invoiceItems;
 }
