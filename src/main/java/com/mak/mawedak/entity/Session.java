@@ -2,19 +2,26 @@ package com.mak.mawedak.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"customer", "patient", "therapist", "subscription", "payment", "sessionStatus", "sessionReview"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Session {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long sessionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +36,7 @@ public class Session {
     @JoinColumn(name = "therapist_id")
     private Therapist therapist;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscription_id", nullable = true)
     private Subscription subscription;
 

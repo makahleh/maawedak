@@ -3,7 +3,10 @@ package com.mak.mawedak.entity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +14,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"customerPersonalInfo", "patientProfileSettings", "calendarSettings", "insurances", "notificationSettings"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -23,6 +29,7 @@ public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long customerId;
 
     @Column(nullable = false)
@@ -50,6 +57,9 @@ public class Customer {
     @UpdateTimestamp
     @Column
     private LocalDateTime updatedDate;
+
+    @Column
+    private Double customerTaxSessionPrice;
 
     @CreationTimestamp
     @Column

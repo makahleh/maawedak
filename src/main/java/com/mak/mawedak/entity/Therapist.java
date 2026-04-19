@@ -2,7 +2,10 @@ package com.mak.mawedak.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,7 +13,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"customer", "department", "roles"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +27,7 @@ public class Therapist {
     }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long therapistId;
 
     @ManyToOne(fetch = FetchType.LAZY)

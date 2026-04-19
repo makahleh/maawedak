@@ -2,10 +2,16 @@ package com.mak.mawedak.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,6 +22,7 @@ public class ExpenseCategory {
     }
 
     @Id
+    @EqualsAndHashCode.Include
     private Long categoryId;
 
     @Column(nullable = false, unique = true)
