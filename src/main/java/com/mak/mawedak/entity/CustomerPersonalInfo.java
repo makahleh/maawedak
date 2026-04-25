@@ -32,10 +32,10 @@ public class CustomerPersonalInfo {
     @Column
     private String taxNumber; // tax number for the customer
 
-    @Column
+    @Column(length = 900)
     private String secretKey;
 
-    @Column
+    @Column(length = 900)
     private String clientKey;
 
     @Column

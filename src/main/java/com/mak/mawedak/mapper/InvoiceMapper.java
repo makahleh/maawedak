@@ -17,10 +17,12 @@ public class InvoiceMapper {
                 ? payment.getSubscription().getInsurance().getName() : null;
         var subInsuranceName = payment.getSubscription() != null && payment.getSubscription().getSubInsurance() != null
                 ? payment.getSubscription().getSubInsurance().getName() : null;
+        var patient = payment.getPatient();
 
         return new InvoiceDTO(
                 payment.getPaymentId(),
-                payment.getPatient().getName(),
+                patient != null ? patient.getPatientId() : null,
+                patient != null ? patient.getName() : null,
                 insuranceName,
                 subInsuranceName,
                 subscriptionMethod != null ? subscriptionMethod.getSubscriptionMethodId() : null,

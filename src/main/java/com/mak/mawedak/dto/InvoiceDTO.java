@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class InvoiceDTO {
     private Long paymentId;
+    private Long patientId;
     private String patientName;
     private String insuranceName;
     private String subInsuranceName;

@@ -1,6 +1,7 @@
 package com.mak.mawedak.service;
 
 import com.mak.mawedak.dto.ExportToFawtaraRequestDTO;
+import com.mak.mawedak.dto.InvoiceByPatient;
 import com.mak.mawedak.dto.InvoiceDTO;
 import com.mak.mawedak.dto.InvoiceFilterDTO;
 import com.mak.mawedak.entity.Customer;
@@ -10,7 +11,9 @@ import com.mak.mawedak.entity.Payment;
 import com.mak.mawedak.mapper.InvoiceMapper;
 import com.mak.mawedak.model.InvoiceItem;
 import com.mak.mawedak.model.Invoice;
+import com.mak.mawedak.repository.CustomerPersonalInfoRepository;
 import com.mak.mawedak.repository.CustomerRepository;
+import com.mak.mawedak.repository.PatientRepository;
 import com.mak.mawedak.repository.PaymentRepository;
 import com.mak.mawedak.service.specification.PaymentSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +23,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class InvoiceService {
@@ -35,7 +37,13 @@ public class InvoiceService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private FawtaraService fawtaraService;
+    private PatientRepository patientRepository;
+
+    @Autowired
+    private CustomerPersonalInfoRepository customerPersonalInfoRepository;
+
+    @Autowired
+    private FawtaraServiceXML fawtaraService;
 
     public Page<InvoiceDTO> getInvoices(InvoiceFilterDTO filter, Pageable pageable, Long customerId) {
         PaymentSpecification paymentSpecification = new PaymentSpecification();
@@ -45,39 +53,22 @@ public class InvoiceService {
     }
 
     public void exportToFawtara(ExportToFawtaraRequestDTO fawtaraRequestDTO, Long customerId) {
-        List<Payment> payments = paymentRepository.findAllByPaymentIdIn(fawtaraRequestDTO.paymentIds());
-        List<Payment> filteredPayments = filterPaymentsForExport(payments);
-
-        if (filteredPayments.isEmpty()) {
-            return;
-        }
 
         Customer customer = customerRepository.findById(customerId).orElseThrow();
-        boolean success = exportPaymentsToFawtara(filteredPayments, customer);
-
-        if (success) {
-            customerRepository.save(customer);
-            paymentRepository.updateExportedToFawtara(filteredPayments.stream().map(Payment::getPaymentId).toList());
-        }
+        exportPaymentsToFawtara(fawtaraRequestDTO, customer);
     }
 
-    private List<Payment> filterPaymentsForExport(List<Payment> payments) {
-        return payments.stream()
-                .filter(payment -> !payment.getWasExportedToFawtara()
-                        && payment.getSubscription().getSubscriptionMethod().getSubscriptionMethodId() == 1)
-                .toList();
-    }
-
-    public boolean exportPaymentsToFawtara(List<Payment> payments, Customer customer) {
-        Map<Patient, List<Payment>> invoicByPatient = payments.stream()
-                .collect(Collectors.groupingBy(Payment::getPatient));
+    public boolean exportPaymentsToFawtara(ExportToFawtaraRequestDTO fawtaraRequestDTO, Customer customer) {
 
         boolean allSuccess = true;
+
         CustomerPersonalInfo customerPersonalInfo = customer.getCustomerPersonalInfo();
 
-        for (Map.Entry<Patient, List<Payment>> entry : invoicByPatient.entrySet()) {
-            Patient patient = entry.getKey();
-            List<Payment> patientPayments = entry.getValue();
+        var invoicesByPatient = fawtaraRequestDTO.patientInvoices();
+
+        Long invoiceSequence = customerPersonalInfo.getIncomeTaxInvoiceSequence();
+        for (InvoiceByPatient invoiceByPatient : invoicesByPatient) {
+            Patient patient = patientRepository.findById(invoiceByPatient.patientId()).orElseThrow();
 
             Invoice invoice = new Invoice();
             invoice.setCustomerTaxId(customerPersonalInfo.getTaxNumber());
@@ -86,35 +77,33 @@ public class InvoiceService {
 
             invoice.setClientTaxId(patient.getNationalNumber() != null ? patient.getNationalNumber() : "");
             invoice.setClientName(patient.getName());
-            invoice.setClientPhoneNumber(patient.getPhoneNumber() != null ? patient.getPhoneNumber() : "");
+            String phoneNumber = patient.getPhoneNumber() != null ? patient.getPhoneNumber() : "";
+            if (phoneNumber.length() > 9) {
+                phoneNumber = phoneNumber.substring(phoneNumber.length() - 9);
+            }
+            invoice.setClientPhoneNumber(phoneNumber);
 
-            Long invoiceSequence = customerPersonalInfo.getIncomeTaxInvoiceSequence();
             invoice.setInvoiceNumber("EIN" + String.format("%05d", invoiceSequence));
             invoice.setInvoiceUUID(UUID.randomUUID());
             invoice.setInvoiceIncrementalId(invoiceSequence.intValue());
             invoice.setIssueDate(LocalDate.now());
 
-            List<InvoiceItem> items = patientPayments.stream().map(p -> {
-                InvoiceItem item = new InvoiceItem();
-                double quantity = 1.0;
-                if (p.getSubscription() != null && p.getSubscription().getSubscriptionMethod() != null
-                        && p.getSubscription().getSubscriptionMethod().getSubscriptionMethodId() == 2) {
-                    quantity = p.getSubscription().getNumberOfTotalSessions();
-                }
-                item.setQuantity(quantity);
-                item.setUnitPrice(p.getAmount() / quantity);
-                item.setAmount(p.getAmount());
-                return item;
-            }).collect(Collectors.toList());
+            List<InvoiceItem> items = new ArrayList<>(1);
+            var item = new InvoiceItem();
+            item.setQuantity(invoiceByPatient.quantity());
+            item.setUnitPrice(invoiceByPatient.pricePerSession());
+            item.setAmount(invoiceByPatient.total());
+            items.add(item);
 
             invoice.setInvoiceItems(items);
-            invoice.setInvoiceTotal(patientPayments.stream().mapToDouble(Payment::getAmount).sum());
+            invoice.setInvoiceTotal(items.stream().mapToDouble(InvoiceItem::getAmount).sum());
 
             if (fawtaraService.sendInvoicesToFawtara(invoice, customer.getCustomerPersonalInfo().getSecretKey(),
                     customer.getCustomerPersonalInfo().getClientKey())) {
                 // TODO: update IncomeTaxInvoiceSequence on DB
-                // TODO: update payment status to exportedToFawtara on DB
-                customerPersonalInfo.setIncomeTaxInvoiceSequence(invoiceSequence + 1);
+                paymentRepository.updateExportedToFawtara(invoiceByPatient.paymentIds());
+                customerPersonalInfo.setIncomeTaxInvoiceSequence(invoiceSequence++);
+                customerPersonalInfoRepository.save(customerPersonalInfo);
             } else {
                 allSuccess = false;
             }
