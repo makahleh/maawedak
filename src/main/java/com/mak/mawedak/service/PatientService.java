@@ -25,6 +25,8 @@ public class PatientService {
         if (patientDto.getPatientId() != null) {
             throw new RuntimeException("Creating Patient should not have a patientId");
         }
+        Long fileNumber = patientRepository.findMaxFileNumberByCustomerId(customerId);
+        patientDto.setFileNumber(fileNumber == null ? 1 : fileNumber + 1);
         return savePatient(customerId, patientDto, null);
     }
 
